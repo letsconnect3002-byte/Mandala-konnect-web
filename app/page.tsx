@@ -102,15 +102,15 @@ export default function Home() {
 
         {/* Statistics Block */}
         <div className="grid grid-cols-3 gap-8 pt-20 border-t border-white/5 max-w-4xl mx-auto w-full z-10 relative mt-16">
-          <div className="text-center md:text-left">
+          <div className="text-center">
             <div className="text-4xl md:text-5xl font-extrabold text-[#E7F3E2] tracking-tight">100%</div>
             <div className="text-xs text-spotify-light-gray font-medium tracking-wider uppercase mt-1.5">Private & Secure</div>
           </div>
-          <div className="text-center md:text-left">
+          <div className="text-center">
             <div className="text-4xl md:text-5xl font-extrabold text-[#E7F3E2] tracking-tight">0</div>
             <div className="text-xs text-spotify-light-gray font-medium tracking-wider uppercase mt-1.5">Algorithms & Feeds</div>
           </div>
-          <div className="text-center md:text-left">
+          <div className="text-center">
             <div className="text-3xl md:text-4xl font-extrabold text-[#E7F3E2] tracking-tight pt-1">Circles</div>
             <div className="text-xs text-spotify-light-gray font-medium tracking-wider uppercase mt-1.5">Not Crowds</div>
           </div>
