@@ -290,7 +290,7 @@ export default function Home() {
             Download for Android
           </a>
           <a
-            href="mailto:santoshpatil@joinmandala.com"
+            href="mailto:santoshpatil@joinmandala.in"
             className="w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white text-white font-bold rounded-full hover:scale-105 active:scale-95 transition-all duration-200 text-lg flex items-center justify-center backdrop-blur-md"
           >
             Contact Us
