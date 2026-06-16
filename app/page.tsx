@@ -90,7 +90,8 @@ export default function Home() {
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
             <a
-              href="/redirect"
+              href="/mandala.apk"
+              download="mandala.apk"
               className="w-full sm:w-auto px-7 py-3.5 bg-white/5 border border-white/10 hover:border-spotify-green/40 text-white hover:text-spotify-green font-bold rounded-full backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-black/10"
             >
               Download for Android <ArrowRight className="w-4 h-4" />
@@ -281,7 +282,8 @@ export default function Home() {
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <a
-            href="/redirect"
+            href="/mandala.apk"
+            download="mandala.apk"
             className="w-full sm:w-auto px-7 py-3.5 bg-white/5 border border-white/10 hover:border-spotify-green/40 text-white hover:text-spotify-green font-bold rounded-full backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-black/10 text-lg"
           >
             <Smartphone className="w-5 h-5" />
