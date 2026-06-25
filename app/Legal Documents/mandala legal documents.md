@@ -1,7 +1,17 @@
-# Mandala — Legal Documents
+# Mandala — Legal Documents & Policies
 
-Jurisdiction: Republic of India
-Governing Laws: Information Technology Act, 2000 ("IT Act") · IT (Reasonable Security Practices and Sensitive Personal Data or Information) Rules, 2011 ("SPDI Rules") · Digital Personal Data Protection Act, 2023 ("DPDP Act")
+Welcome to the Mandala Legal Hub. This page outlines the guidelines, terms of service, and privacy commitments that govern your use of the Mandala mobile application.
+
+### Table of Contents
+1. [Privacy Policy](#document-1--privacy-policy) – How we collect, use, and protect your personal data.
+2. [Terms of Service](#document-2--terms-of-service) – The rules, guidelines, and agreements for using the application.
+3. [Consent Notice](#document-3--consent-notice) – The explicit notice under the DPDP Act, 2023.
+
+---
+
+### General Information
+- **Jurisdiction:** Republic of India
+- **Governing Laws:** Information Technology Act, 2000 ("IT Act") · IT (Reasonable Security Practices and Sensitive Personal Data or Information) Rules, 2011 ("SPDI Rules") · Digital Personal Data Protection Act, 2023 ("DPDP Act")
 
 ## Document 1 — Privacy Policy
 
