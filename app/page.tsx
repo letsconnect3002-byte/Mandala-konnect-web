@@ -47,7 +47,7 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-44 pb-32 px-6 overflow-hidden min-h-[92vh] flex flex-col justify-between items-center max-w-7xl mx-auto w-full z-10">
+      <section className="relative pt-44 pb-32 px-6 overflow-hidden min-h-[92vh] flex flex-col justify-between items-center w-full z-10">
         {/* Background Gradients (Fluid Gradient matching the design image) */}
         <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden bg-spotify-black">
           {/* Top-Left: Deep teal/forest green */}
