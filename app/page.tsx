@@ -26,7 +26,7 @@ export default function Home() {
 
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-spotify-black/20 backdrop-blur-xl border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-8 py-4 flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/Mandala Icon 1.png" alt="Mandala Logo" className="w-8 h-8 object-contain" />
@@ -77,7 +77,7 @@ export default function Home() {
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-5xl md:text-8xl font-normal leading-[1.1] text-[#E7F3E2] tracking-tight max-w-4xl mx-auto">
+          <h1 className="text-4xl sm:text-6xl md:text-8xl font-normal leading-[1.1] text-[#E7F3E2] tracking-tight max-w-4xl mx-auto">
             Connect the circles <br />
             <span className="italic font-light tracking-wide text-white">not the world</span>
           </h1>
@@ -101,16 +101,16 @@ export default function Home() {
         </div>
 
         {/* Statistics Block */}
-        <div className="grid grid-cols-3 gap-8 pt-20 border-t border-white/5 max-w-4xl mx-auto w-full z-10 relative mt-16">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-4 pt-20 border-t border-white/5 max-w-4xl mx-auto w-full z-10 relative mt-16">
           <div className="text-center">
             <div className="text-4xl md:text-5xl font-extrabold text-[#E7F3E2] tracking-tight">100%</div>
             <div className="text-xs text-spotify-light-gray font-medium tracking-wider uppercase mt-1.5">Private & Secure</div>
           </div>
-          <div className="text-center">
+          <div className="text-center border-t border-white/5 sm:border-t-0 pt-6 sm:pt-0">
             <div className="text-4xl md:text-5xl font-extrabold text-[#E7F3E2] tracking-tight">0</div>
             <div className="text-xs text-spotify-light-gray font-medium tracking-wider uppercase mt-1.5">Algorithms & Feeds</div>
           </div>
-          <div className="text-center">
+          <div className="text-center border-t border-white/5 sm:border-t-0 pt-6 sm:pt-0">
             <div className="text-3xl md:text-4xl font-extrabold text-[#E7F3E2] tracking-tight pt-1">Circles</div>
             <div className="text-xs text-spotify-light-gray font-medium tracking-wider uppercase mt-1.5">Not Crowds</div>
           </div>
@@ -215,7 +215,7 @@ export default function Home() {
           </div>
 
           {/* Highlighted Feature 7 (Human Referrals) */}
-          <div className="lg:col-span-3 bg-white/5 backdrop-blur-md border border-spotify-green/20 p-8 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 hover:border-spotify-green/45 hover:bg-white/10 transition-all duration-300">
+          <div className="md:col-span-2 lg:col-span-3 bg-white/5 backdrop-blur-md border border-spotify-green/20 p-8 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 hover:border-spotify-green/45 hover:bg-white/10 transition-all duration-300">
             <div className="space-y-3 max-w-2xl text-left">
               <div className="flex items-center gap-3">
                 <Users2 className="w-8 h-8 text-spotify-green" />
@@ -238,38 +238,38 @@ export default function Home() {
 
         <div className="space-y-8 max-w-3xl mx-auto">
           {/* How It Works Card 1 */}
-          <div className="flex gap-8 items-start bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition duration-300">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 items-center sm:items-start bg-white/5 backdrop-blur-md border border-white/10 p-5 sm:p-6 rounded-2xl hover:bg-white/10 transition duration-300 text-center sm:text-left">
             <div className="flex-shrink-0 w-12 h-12 bg-spotify-green text-black rounded-full flex items-center justify-center font-extrabold text-lg shadow-md shadow-spotify-green/10">1</div>
             <div>
               <h3 className="text-2xl font-bold mb-2 text-white">Build your card</h3>
-              <p className="text-spotify-light-gray text-base font-light">Add your name, what you do, and a few lines that actually sound like you. This is your one true profile, no separate bio, no separate about page.</p>
+              <p className="text-spotify-light-gray text-base font-light font-sans">Add your name, what you do, and a few lines that actually sound like you. This is your one true profile, no separate bio, no separate about page.</p>
             </div>
           </div>
 
           {/* How It Works Card 2 */}
-          <div className="flex gap-8 items-start bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition duration-300">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 items-center sm:items-start bg-white/5 backdrop-blur-md border border-white/10 p-5 sm:p-6 rounded-2xl hover:bg-white/10 transition duration-300 text-center sm:text-left">
             <div className="flex-shrink-0 w-12 h-12 bg-spotify-green text-black rounded-full flex items-center justify-center font-extrabold text-lg shadow-md shadow-spotify-green/10">2</div>
             <div>
               <h3 className="text-2xl font-bold mb-2 text-white">Share your code</h3>
-              <p className="text-spotify-light-gray text-base font-light">One QR code, one invite link. Showing it or sending it is the connection request. There&apos;s no follow button, because there&apos;s nothing to follow.</p>
+              <p className="text-spotify-light-gray text-base font-light font-sans">One QR code, one invite link. Showing it or sending it is the connection request. There&apos;s no follow button, because there&apos;s nothing to follow.</p>
             </div>
           </div>
 
           {/* How It Works Card 3 */}
-          <div className="flex gap-8 items-start bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition duration-300">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 items-center sm:items-start bg-white/5 backdrop-blur-md border border-white/10 p-5 sm:p-6 rounded-2xl hover:bg-white/10 transition duration-300 text-center sm:text-left">
             <div className="flex-shrink-0 w-12 h-12 bg-spotify-green text-black rounded-full flex items-center justify-center font-extrabold text-lg shadow-md shadow-spotify-green/10">3</div>
             <div>
               <h3 className="text-2xl font-bold mb-2 text-white">They&apos;re in</h3>
-              <p className="text-spotify-light-gray text-base font-light">When someone scans your code or accepts your invite, you&apos;re both inside the same sealed circle, visible to each other, invisible to everyone else.</p>
+              <p className="text-spotify-light-gray text-base font-light font-sans">When someone scans your code or accepts your invite, you&apos;re both inside the same sealed circle, visible to each other, invisible to everyone else.</p>
             </div>
           </div>
 
           {/* How It Works Card 4 */}
-          <div className="flex gap-8 items-start bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition duration-300">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 items-center sm:items-start bg-white/5 backdrop-blur-md border border-white/10 p-5 sm:p-6 rounded-2xl hover:bg-white/10 transition duration-300 text-center sm:text-left">
             <div className="flex-shrink-0 w-12 h-12 bg-spotify-green text-black rounded-full flex items-center justify-center font-extrabold text-lg shadow-md shadow-spotify-green/10">4</div>
             <div>
               <h3 className="text-2xl font-bold mb-2 text-white">Talk like it matters</h3>
-              <p className="text-spotify-light-gray text-base font-light">No feed to scroll past first. No algorithm deciding who you see. Just the conversation you came here for.</p>
+              <p className="text-spotify-light-gray text-base font-light font-sans">No feed to scroll past first. No algorithm deciding who you see. Just the conversation you came here for.</p>
             </div>
           </div>
         </div>
@@ -307,7 +307,7 @@ export default function Home() {
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/Mandala Icon 1.png" alt="Mandala Logo" className="w-6 h-6 object-contain opacity-55 hover:opacity-100 transition" />
-          <p>&copy; 2026 Mandala. All rights reserved. | <a href="#" className="hover:text-spotify-green transition duration-150">Privacy</a> | <a href="#" className="hover:text-spotify-green transition duration-150">Terms</a></p>
+          <p>&copy; 2026 Mandala. All rights reserved. | <a href="/legal" className="hover:text-spotify-green transition duration-150">Privacy</a> | <a href="/legal" className="hover:text-spotify-green transition duration-150">Terms</a></p>
         </div>
       </footer>
     </div>

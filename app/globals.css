@@ -22,3 +22,141 @@ body {
   color: var(--foreground);
   font-family: var(--font-plus-jakarta), "Inter", sans-serif;
 }
+
+/* Legal Markdown content styles */
+.legal-content {
+  color: var(--color-spotify-light-gray);
+  line-height: 1.7;
+}
+
+.legal-content h1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #E7F3E2;
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 1rem;
+  text-align: center; /* Center the main title */
+}
+
+.legal-content h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-top: 3rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 0.5rem;
+}
+
+.legal-content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-spotify-green);
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.legal-content h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.legal-content p {
+  margin-bottom: 1.25rem;
+  font-weight: 300;
+  text-align: justify; /* Justify text for standard legal alignment */
+}
+
+.legal-content strong {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.legal-content ul, .legal-content ol {
+  margin-bottom: 1.25rem;
+  padding-left: 1.5rem;
+}
+
+.legal-content ul {
+  list-style-type: disc;
+}
+
+.legal-content ol {
+  list-style-type: decimal;
+}
+
+.legal-content li {
+  margin-bottom: 0.5rem;
+  font-weight: 300;
+}
+
+/* Fix spacing for markdown-generated paragraphs inside list items */
+.legal-content li p {
+  margin: 0;
+  display: inline;
+}
+
+.legal-content table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  background-color: rgba(255, 255, 255, 0.02);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.legal-content th, .legal-content td {
+  padding: 0.85rem 1rem;
+  text-align: left;
+  vertical-align: top; /* Align cell text to the top */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  min-width: 120px; /* Ensure table columns don't get fully squished on small devices */
+}
+
+.legal-content th {
+  background-color: rgba(255, 255, 255, 0.05);
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.legal-content tr:last-child td {
+  border-bottom: none;
+}
+
+.legal-content blockquote {
+  border-left: 3px solid var(--color-spotify-green);
+  padding-left: 1rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+  background-color: rgba(29, 185, 84, 0.03);
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.legal-content a {
+  color: var(--color-spotify-green);
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.legal-content a:hover {
+  color: #ffffff;
+}
+
+.legal-content hr {
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 2.5rem 0;
+}
