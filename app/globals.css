@@ -30,24 +30,39 @@ body {
 }
 
 .legal-content h1 {
-  font-size: 2.25rem;
+  font-size: 1.75rem; /* Smaller size on mobile */
   font-weight: 800;
   color: #E7F3E2;
-  margin-top: 1.5rem;
-  margin-bottom: 2rem;
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 1rem;
+  padding-bottom: 0.75rem;
   text-align: center; /* Center the main title */
 }
 
 .legal-content h2 {
-  font-size: 1.75rem;
+  font-size: 1.35rem; /* Smaller size on mobile */
   font-weight: 700;
   color: #ffffff;
-  margin-top: 3rem;
-  margin-bottom: 1.25rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   padding-bottom: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .legal-content h1 {
+    font-size: 2.25rem;
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+  }
+
+  .legal-content h2 {
+    font-size: 1.75rem;
+    margin-top: 3rem;
+    margin-bottom: 1.25rem;
+  }
 }
 
 .legal-content h3 {
