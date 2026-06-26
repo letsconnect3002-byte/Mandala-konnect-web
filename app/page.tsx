@@ -307,7 +307,7 @@ export default function Home() {
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/Mandala Icon 1.png" alt="Mandala Logo" className="w-6 h-6 object-contain opacity-55 hover:opacity-100 transition" />
-          <p>&copy; 2026 Mandala. All rights reserved. | <a href="/legal" className="hover:text-spotify-green transition duration-150">Privacy</a> | <a href="/legal" className="hover:text-spotify-green transition duration-150">Terms</a></p>
+          <p>&copy; 2026 Mandala. All rights reserved. | <a href="/legal" className="hover:text-spotify-green transition duration-150">Privacy</a> | <a href="/legal" className="hover:text-spotify-green transition duration-150">Terms</a> | <a href="/delete-account" className="hover:text-spotify-green transition duration-150">Delete Account</a></p>
         </div>
       </footer>
     </div>
