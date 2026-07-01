@@ -36,7 +36,7 @@ export default function Home() {
             <a href="#who-it-s-built-for" className="hover:text-white transition duration-200">Our Belief</a>
             <a href="#features" className="hover:text-white transition duration-200">Features</a>
             <a href="#how-it-works" className="hover:text-white transition duration-200">How It Works</a>
-            <a href="mailto:hello@mandala.com" className="hover:text-white transition duration-200">Contact</a>
+            <a href="/support" className="hover:text-white transition duration-200">Support</a>
           </div>
           <div>
             <a href="/redirect" className="px-5 py-2.5 bg-white/5 border border-white/10 hover:border-white/30 hover:bg-white/10 text-white font-medium rounded-full text-xs tracking-wide transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-1.5 backdrop-blur-md">
@@ -290,10 +290,10 @@ export default function Home() {
             Download for Android
           </a>
           <a
-            href="mailto:santoshpatil@joinmandala.in"
+            href="/support"
             className="w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white text-white font-bold rounded-full hover:scale-105 active:scale-95 transition-all duration-200 text-lg flex items-center justify-center backdrop-blur-md"
           >
-            Contact Us
+            Support
           </a>
         </div>
         <p className="text-sm text-spotify-light-gray mt-4">iOS App Coming Soon</p>
@@ -307,7 +307,7 @@ export default function Home() {
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/Mandala Icon 1.png" alt="Mandala Logo" className="w-6 h-6 object-contain opacity-55 hover:opacity-100 transition" />
-          <p>&copy; 2026 Mandala. All rights reserved. | <a href="/legal" className="hover:text-spotify-green transition duration-150">Privacy</a> | <a href="/legal" className="hover:text-spotify-green transition duration-150">Terms</a> | <a href="/delete-account" className="hover:text-spotify-green transition duration-150">Delete Account</a></p>
+          <p>&copy; 2026 Mandala. All rights reserved. | <a href="/legal" className="hover:text-spotify-green transition duration-150">Privacy</a> | <a href="/legal" className="hover:text-spotify-green transition duration-150">Terms</a> | <a href="/delete-account" className="hover:text-spotify-green transition duration-150">Delete Account</a> | <a href="/support" className="hover:text-spotify-green transition duration-150">Support</a></p>
         </div>
       </footer>
     </div>
