@@ -47,7 +47,7 @@ Jana enforces the following moderation procedures:
 Jana provides the following built-in mechanisms to protect users:
 
 - **Report/Flag Objectionable Messages:** Users can report any message or content they find objectionable, abusive, or in violation of this EULA directly from within the App. Reported content is immediately flagged for developer review.
-- **Instant Block:** Users can instantly block any abusive user. Blocking completely hides all of the blocked user's content from the reporter's view and flags the blocked account for developer review. The blocked user will not be notified of the block, and will not be able to contact or view the blocking user's profile.
+- **Connection Deletion and Reporting:** Instead of a traditional temporary block, Jana allows users to permanently delete an abusive or unwanted user from their connections and submit a report. Once a connection is deleted, the connection is instantly severed, all chat history, messages, and profile visibility associated with that person are immediately and completely vanished from the reporter's account/device, and the account is flagged for developer review. The deleted user is permanently blocked from re-establishing any contact or re-adding the reporter.
 
 These features are accessible at all times through the App's messaging interface and user profile screens.
 
