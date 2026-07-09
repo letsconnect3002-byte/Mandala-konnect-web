@@ -9,7 +9,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Mandala | Connect Your Inner Circle",
+  title: "Jana | Connect Your Inner Circle",
   description: "A private, distraction-free messaging app designed for your genuine professional and close circles. No algorithms, no strangers, no noise.",
 };
 

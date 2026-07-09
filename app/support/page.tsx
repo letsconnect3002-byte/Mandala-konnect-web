@@ -13,7 +13,7 @@ export default function SupportPage() {
   const targetEmail = 'letsconnect3002@gmail.com';
   
   const getMailBody = () => {
-    return `Hello Mandala Support,
+    return `Hello Jana Support,
 
 Support Ticket Details:
 Name: ${name || 'Not provided'}
@@ -31,7 +31,7 @@ Thank you.`;
     if (!email || !message) return;
     
     const body = getMailBody();
-    const mailSubject = `Mandala Support - ${subject}`;
+    const mailSubject = `Jana Support - ${subject}`;
     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(targetEmail)}&su=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(body)}`;
     window.open(gmailUrl, '_blank', 'noopener,noreferrer');
   };
@@ -41,7 +41,7 @@ Thank you.`;
     if (!email || !message) return;
     
     const body = getMailBody();
-    const mailSubject = `Mandala Support - ${subject}`;
+    const mailSubject = `Jana Support - ${subject}`;
     const mailtoUrl = `mailto:${targetEmail}?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(body)}`;
     window.location.href = mailtoUrl;
   };
@@ -49,7 +49,7 @@ Thank you.`;
   const faqs = [
     {
       q: "How do I connect with my inner circle?",
-      a: "Mandala is design-sealed. You connect only in-person by scanning a friend's unique QR code, or by sharing a direct, one-time invite link."
+      a: "Jana is design-sealed. You connect only in-person by scanning a friend's unique QR code, or by sharing a direct, one-time invite link."
     },
     {
       q: "Is there a search bar or directory?",
@@ -83,8 +83,8 @@ Thank you.`;
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex justify-between items-center">
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/Mandala Icon 1.png" alt="Mandala Logo" className="w-8 h-8 object-contain" />
-            <span className="text-xl font-extrabold tracking-wider text-white">MANDALA</span>
+            <img src="/Jana.png" alt="Jana Logo" className="w-8 h-8 object-contain" />
+            <span className="text-xl font-extrabold tracking-wider text-white">JANA</span>
           </Link>
           <div>
             <Link href="/" className="px-3.5 py-2 sm:px-5 sm:py-2.5 bg-white/5 border border-white/10 hover:border-white/30 hover:bg-white/10 text-white font-medium rounded-full text-xs tracking-wide transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-1.5 backdrop-blur-md">
@@ -96,9 +96,9 @@ Thank you.`;
 
       {/* Background Gradients */}
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden bg-spotify-black">
-        <div className="absolute -top-[10%] -left-[10%] w-[50%] h-[60%] bg-[#042f1a] rounded-full blur-[120px] opacity-35" />
+        <div className="absolute -top-[10%] -left-[10%] w-[50%] h-[60%] bg-[#051b40] rounded-full blur-[120px] opacity-35" />
         <div className="absolute top-[15%] -left-[20%] w-[65%] h-[70%] bg-spotify-green rounded-full blur-[130px] opacity-15" />
-        <div className="absolute -bottom-[10%] -left-[10%] w-[55%] h-[60%] bg-[#3f6212] rounded-full blur-[120px] opacity-20" />
+        <div className="absolute -bottom-[10%] -left-[10%] w-[55%] h-[60%] bg-[#1e1b4b] rounded-full blur-[120px] opacity-20" />
       </div>
 
       {/* Content Container */}
@@ -210,7 +210,7 @@ Thank you.`;
               </div>
               <h2 className="text-xl font-bold tracking-tight text-white">Frequently Asked</h2>
               <p className="text-xs text-spotify-light-gray font-light">
-                Quick answers to common questions about using Mandala.
+                Quick answers to common questions about using Jana.
               </p>
             </div>
 
@@ -229,7 +229,7 @@ Thank you.`;
 
       {/* Footer */}
       <footer className="relative z-10 text-center text-spotify-light-gray text-[10px] pt-12">
-        <p>&copy; 2026 Mandala. All rights reserved.</p>
+        <p>&copy; 2026 Jana. All rights reserved.</p>
       </footer>
     </div>
   );

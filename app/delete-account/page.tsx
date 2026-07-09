@@ -9,10 +9,10 @@ export default function DeleteAccountPage() {
   const [reason, setReason] = useState('');
 
   const targetEmail = 'letsconnect3002@gmail.com';
-  const subject = 'Mandala - Account Deletion Request';
+  const subject = 'Jana - Account Deletion Request';
   
   const getMailBody = () => {
-    return `Hello Mandala Support,
+    return `Hello Jana Support,
 
 Please delete my account and all associated data from your systems.
 
@@ -58,8 +58,8 @@ Thank you.`;
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex justify-between items-center">
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/Mandala Icon 1.png" alt="Mandala Logo" className="w-8 h-8 object-contain" />
-            <span className="text-xl font-extrabold tracking-wider text-white">MANDALA</span>
+            <img src="/Jana.png" alt="Jana Logo" className="w-8 h-8 object-contain" />
+            <span className="text-xl font-extrabold tracking-wider text-white">JANA</span>
           </Link>
           <div>
             <Link href="/" className="px-3.5 py-2 sm:px-5 sm:py-2.5 bg-white/5 border border-white/10 hover:border-white/30 hover:bg-white/10 text-white font-medium rounded-full text-xs tracking-wide transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-1.5 backdrop-blur-md">
@@ -71,9 +71,9 @@ Thank you.`;
 
       {/* Background Gradients */}
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden bg-spotify-black">
-        <div className="absolute -top-[10%] -left-[10%] w-[50%] h-[60%] bg-[#042f1a] rounded-full blur-[120px] opacity-35" />
+        <div className="absolute -top-[10%] -left-[10%] w-[50%] h-[60%] bg-[#051b40] rounded-full blur-[120px] opacity-35" />
         <div className="absolute top-[15%] -left-[20%] w-[65%] h-[70%] bg-spotify-green rounded-full blur-[130px] opacity-15" />
-        <div className="absolute -bottom-[10%] -left-[10%] w-[55%] h-[60%] bg-[#3f6212] rounded-full blur-[120px] opacity-20" />
+        <div className="absolute -bottom-[10%] -left-[10%] w-[55%] h-[60%] bg-[#1e1b4b] rounded-full blur-[120px] opacity-20" />
       </div>
 
       {/* Content Container */}
@@ -85,7 +85,7 @@ Thank you.`;
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-white">Delete Account</h1>
             <p className="text-sm text-spotify-light-gray leading-relaxed font-light">
-              Submit a request to permanently delete your Mandala account and clear all associated data from our servers.
+              Submit a request to permanently delete your Jana account and clear all associated data from our servers.
             </p>
           </div>
 
@@ -148,7 +148,7 @@ Thank you.`;
 
       {/* Footer */}
       <footer className="relative z-10 text-center text-spotify-light-gray text-[10px] pt-12">
-        <p>&copy; 2026 Mandala. All rights reserved.</p>
+        <p>&copy; 2026 Jana. All rights reserved.</p>
       </footer>
     </div>
   );

@@ -4,12 +4,12 @@ import { marked } from 'marked';
 import { ArrowLeft } from 'lucide-react';
 
 export const metadata = {
-  title: "Legal Documents | Jana",
-  description: "Jana's Privacy Policy, Terms of Service, and Consent Notice.",
+  title: "End User License Agreement (EULA) | Jana",
+  description: "Jana's End User License Agreement — covering user-generated content policy, Apple App Store compliance, safety features, and terms of use.",
 };
 
-export default async function LegalPage() {
-  const filePath = path.join(process.cwd(), 'app', 'Legal Documents', 'jana legal documents.md');
+export default async function EulaPage() {
+  const filePath = path.join(process.cwd(), 'app', 'Legal Documents', 'jana eula.md');
   const fileContent = fs.readFileSync(filePath, 'utf8');
   
   // Parse markdown content to HTML
@@ -36,7 +36,10 @@ export default async function LegalPage() {
             <img src="/Jana.png" alt="Jana Logo" className="w-8 h-8 object-contain" />
             <span className="text-xl font-extrabold tracking-wider text-white">JANA</span>
           </a>
-          <div>
+          <div className="flex items-center gap-3">
+            <a href="/legal" className="hidden sm:flex px-3.5 py-2 sm:px-5 sm:py-2.5 bg-white/5 border border-white/10 hover:border-white/30 hover:bg-white/10 text-white font-medium rounded-full text-xs tracking-wide transition-all duration-300 hover:scale-105 active:scale-95 items-center gap-1.5 backdrop-blur-md">
+              Other Legal Docs
+            </a>
             <a href="/" className="px-3.5 py-2 sm:px-5 sm:py-2.5 bg-white/5 border border-white/10 hover:border-white/30 hover:bg-white/10 text-white font-medium rounded-full text-xs tracking-wide transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-1.5 backdrop-blur-md">
               <ArrowLeft className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Back to Home</span><span className="sm:hidden">Home</span>
             </a>

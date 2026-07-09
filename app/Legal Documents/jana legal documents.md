@@ -1,11 +1,12 @@
-# Mandala — Legal Documents & Policies
+# Jana — Legal Documents & Policies
 
-Welcome to the Mandala Legal Hub. This page outlines the guidelines, terms of service, and privacy commitments that govern your use of the Mandala mobile application.
+Welcome to the Jana Legal Hub. This page outlines the guidelines, terms of service, and privacy commitments that govern your use of the Jana mobile application.
 
 ### Table of Contents
 1. [Privacy Policy](#document-1--privacy-policy) – How we collect, use, and protect your personal data.
 2. [Terms of Service](#document-2--terms-of-service) – The rules, guidelines, and agreements for using the application.
 3. [Consent Notice](#document-3--consent-notice) – The explicit notice under the DPDP Act, 2023.
+4. [End User License Agreement (EULA)](/eula) – Separate page covering UGC policy, Apple App Store compliance, and safety terms.
 
 ---
 
@@ -22,7 +23,7 @@ Version: 1.0
 
 ### 1. About This Policy
 
-This Privacy Policy explains how Mandala ("we," "us," or "our"), the operator of the Mandala mobile application ("App"), collects, uses, stores, shares, and protects your personal data.
+This Privacy Policy explains how Jana ("we," "us," or "our"), the operator of the Jana mobile application ("App"), collects, uses, stores, shares, and protects your personal data.
 
 It is issued under:
 - Rule 4 of the SPDI Rules, 2011 (mandatory privacy policy publication)
@@ -34,7 +35,7 @@ By creating an account or using the App, you acknowledge that you have read and 
 
 ### 2. Who This Policy Applies To
 
-This Policy applies to all registered users ("you" or "Data Principal") of the Mandala App, including visitors who interact with the App for the purpose of creating an account.
+This Policy applies to all registered users ("you" or "Data Principal") of the Jana App, including visitors who interact with the App for the purpose of creating an account.
 
 ---
 
@@ -229,7 +230,7 @@ As required under Rule 9 of the SPDI Rules, 2011, and Section 13 of the DPDP Act
 
 Name: Santosh patil
 Designation: founder
-Organisation: Mandala App
+Organisation: Jana App
 Email: santoshpatil@joinmandala.in
 Address: Bangalore, Karnataka, India
 Response Time: We will acknowledge your grievance within 24 hours and resolve it within 30 days of receipt, as required under the SPDI Rules.
@@ -262,7 +263,7 @@ Version: 1.0
 
 ### 1. Agreement to Terms
 
-These Terms of Service ("Terms") constitute a legally binding agreement between you and Mandala ("we," "us," or "our"), governing your access to and use of the Mandala mobile application ("App").
+These Terms of Service ("Terms") constitute a legally binding agreement between you and Jana ("we," "us," or "our"), governing your access to and use of the Jana mobile application ("App").
 
 By creating an account, you confirm that you are at least 18 years old, that you have read and understood these Terms, and that you agree to be bound by them. If you do not agree, do not use the App.
 
@@ -270,7 +271,7 @@ By creating an account, you confirm that you are at least 18 years old, that you
 
 ### 2. Description of the App
 
-Mandala is a private networking application that enables users to build intentional, QR-based connections and communicate through direct messaging. Core features include:
+Jana is a private networking application that enables users to build intentional, QR-based connections and communicate through direct messaging. Core features include:
 - Profile creation with configurable casual and professional cards
 - QR code and invite-code based connection flow
 - Direct encrypted messaging between connections
@@ -342,7 +343,7 @@ Monk Mode is a focus feature that allows you to temporarily hide selected connec
 
 ### 9. Intellectual Property
 
-All intellectual property rights in the App, including the Mandala brand, its design, code, and all materials we create, are owned by or licensed to us. Nothing in these Terms transfers any intellectual property rights to you.
+All intellectual property rights in the App, including the Jana brand, its design, code, and all materials we create, are owned by or licensed to us. Nothing in these Terms transfers any intellectual property rights to you.
 
 You may not copy, modify, reverse engineer, disassemble, or create derivative works of the App.
 
@@ -385,7 +386,7 @@ Nothing in this clause limits our liability for death or personal injury caused 
 
 ### 13. Indemnification
 
-You agree to indemnify and hold harmless Mandala and its founders, officers, and employees from any claims, losses, damages, liabilities, and expenses (including legal fees) arising out of your use of the App, your violation of these Terms, or your violation of any applicable law or third-party rights.
+You agree to indemnify and hold harmless Jana and its founders, officers, and employees from any claims, losses, damages, liabilities, and expenses (including legal fees) arising out of your use of the App, your violation of these Terms, or your violation of any applicable law or third-party rights.
 
 ---
 
@@ -405,7 +406,7 @@ We may modify these Terms at any time. When we make material changes, we will pr
 
 ### 16. Contact
 
-Mandala
+Jana
 Bangalore, India
 Email: santoshpatil@joinmandala.in
 
@@ -421,11 +422,11 @@ Purpose: This notice is to be presented to users at the point of registration (b
 
 ---
 
-### Consent Notice — Mandala
+### Consent Notice — Jana
 
 Before you create your account, please read the following:
 
-By creating a Mandala account, you give Mandala your free, specific, informed, and unambiguous consent to collect and process the following personal data for the purposes stated:
+By creating a Jana account, you give Jana your free, specific, informed, and unambiguous consent to collect and process the following personal data for the purposes stated:
 
 | Data | Purpose |
 |---|---|
@@ -464,7 +465,7 @@ Fill each placeholder before publishing:
 
 | Placeholder | What to enter |
 |---|---|
-| `Mandala` | Your registered company or LLP name (e.g., XYZ Technologies Private Limited) |
+| `Jana` | Your registered company or LLP name (e.g., XYZ Technologies Private Limited) |
 | `25 June 2026` | The date you publish the document (DD Month YYYY) |
 | `santosh patil` | Full name of the designated Grievance Officer |
 | `Founder and CEO` | Their role (e.g., Founder, Co-Founder, Chief Privacy Officer) |

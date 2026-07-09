@@ -6,7 +6,7 @@
 }
 
 @theme {
-  --color-spotify-green: #1DB954;
+  --color-spotify-green: #0064E0;
   --color-spotify-black: #191414;
   --color-spotify-dark-gray: #121212;
   --color-spotify-medium-gray: #535353;
@@ -32,7 +32,7 @@ body {
 .legal-content h1 {
   font-size: 1.75rem; /* Smaller size on mobile */
   font-weight: 800;
-  color: #E7F3E2;
+  color: #E2F1FF;
   margin-top: 1rem;
   margin-bottom: 1.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -154,7 +154,7 @@ body {
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
   font-style: italic;
-  background-color: rgba(29, 185, 84, 0.03);
+  background-color: rgba(0, 100, 224, 0.03);
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
   border-radius: 0 0.5rem 0.5rem 0;

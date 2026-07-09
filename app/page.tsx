@@ -29,18 +29,18 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/Mandala Icon 1.png" alt="Mandala Logo" className="w-8 h-8 object-contain" />
-            <span className="text-xl font-extrabold tracking-wider text-white">MANDALA</span>
+            <img src="/Jana.png" alt="Jana Logo" className="w-8 h-8 object-contain" />
+            <span className="text-xl font-extrabold tracking-wider text-white">JANA</span>
           </div>
           <div className="hidden md:flex gap-8 items-center text-sm font-medium text-spotify-light-gray">
-            <a href="#who-it-s-built-for" className="hover:text-white transition duration-200">Our Belief</a>
-            <a href="#features" className="hover:text-white transition duration-200">Features</a>
-            <a href="#how-it-works" className="hover:text-white transition duration-200">How It Works</a>
+            <a href="#philosophy" className="hover:text-white transition duration-200">Philosophy</a>
+            <a href="#features" className="hover:text-white transition duration-200">How It Works</a>
+            <a href="#why-it-matters" className="hover:text-white transition duration-200">Why It Matters</a>
             <a href="/support" className="hover:text-white transition duration-200">Support</a>
           </div>
           <div>
             <a href="/redirect" className="px-5 py-2.5 bg-white/5 border border-white/10 hover:border-white/30 hover:bg-white/10 text-white font-medium rounded-full text-xs tracking-wide transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-1.5 backdrop-blur-md">
-              Download App <ArrowRight className="w-3.5 h-3.5" />
+              Get Jana <ArrowRight className="w-3.5 h-3.5" />
             </a>
           </div>
         </div>
@@ -48,24 +48,13 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="relative pt-44 pb-32 px-6 overflow-hidden min-h-[92vh] flex flex-col justify-between items-center w-full z-10">
-        {/* Background Gradients (Fluid Gradient matching the design image) */}
+        {/* Background Gradients */}
         <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden bg-spotify-black">
-          {/* Top-Left: Deep teal/forest green */}
-          <div className="absolute -top-[10%] -left-[10%] w-[50%] h-[60%] bg-[#042f1a] rounded-full blur-[120px] opacity-90" />
-
-          {/* Middle-Left: Vibrant Spotify Green / Emerald sweep */}
+          <div className="absolute -top-[10%] -left-[10%] w-[50%] h-[60%] bg-[#051b40] rounded-full blur-[120px] opacity-90" />
           <div className="absolute top-[15%] -left-[20%] w-[65%] h-[70%] bg-spotify-green rounded-full blur-[130px] opacity-85" />
-
-          {/* Bottom-Left: Soft yellow-green / olive tint */}
-          <div className="absolute -bottom-[10%] -left-[10%] w-[55%] h-[60%] bg-[#3f6212] rounded-full blur-[120px] opacity-75" />
-
-          {/* Center-Left: Pale mint green / light cyan highlight */}
-          <div className="absolute top-[10%] left-[10%] w-[60%] h-[80%] bg-[#a7f3d0]/65 rounded-full blur-[120px] opacity-90 mix-blend-screen" />
-
-          {/* Center-Core: Ethereal light pastel green/white glow */}
-          <div className="absolute top-[25%] left-[5%] w-[45%] h-[50%] bg-[#f0fdf4]/50 rounded-full blur-[90px] opacity-95 mix-blend-screen animate-pulse" style={{ animationDuration: '8s' }} />
-
-          {/* Right: Radial Black Mask creating the crescent sweep */}
+          <div className="absolute -bottom-[10%] -left-[10%] w-[55%] h-[60%] bg-[#1e1b4b] rounded-full blur-[120px] opacity-75" />
+          <div className="absolute top-[10%] left-[10%] w-[60%] h-[80%] bg-[#93c5fd]/65 rounded-full blur-[120px] opacity-90 mix-blend-screen" />
+          <div className="absolute top-[25%] left-[5%] w-[45%] h-[50%] bg-[#eff6ff]/50 rounded-full blur-[90px] opacity-95 mix-blend-screen animate-pulse" style={{ animationDuration: '8s' }} />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_95%_50%,_#191414_0%,_#191414_35%,_transparent_90%)] opacity-100" />
         </div>
 
@@ -73,25 +62,25 @@ export default function Home() {
         <div className="text-center space-y-9 max-w-5xl mx-auto z-10 relative">
           {/* Pill Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-xs text-white/80 font-medium tracking-wider uppercase">
-            A circle, not a crowd.
+            Focus on who matters.
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-4xl sm:text-6xl md:text-8xl font-normal leading-[1.1] text-[#E7F3E2] tracking-tight max-w-4xl mx-auto">
-            Connect the circles <br />
-            <span className="italic font-light tracking-wide text-white">not the world</span>
+          <h1 className="text-4xl sm:text-6xl md:text-8xl font-normal leading-[1.1] text-[#E2F1FF] tracking-tight max-w-4xl mx-auto">
+            Life got loud. <br />
+            <span className="italic font-light tracking-wide text-white">Make it quiet again.</span>
           </h1>
 
           {/* Subtitle */}
           <p className="text-base md:text-lg text-spotify-light-gray max-w-2xl mx-auto leading-relaxed font-light tracking-wide">
-            Mandala is a sealed space for the people you already trust, and the few you&apos;re letting in next. No discovery feed. No strangers. Just the circle you chose, on purpose.
+            You already know who deserves your time. Jana is the only space that keeps them close and everything else out. No feeds. No algorithms. No strangers. Just the people you chose, on purpose.
           </p>
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
             <a
-              href="/mandala.apk"
-              download="mandala.apk"
+              href="/jana.apk"
+              download="jana.apk"
               className="w-full sm:w-auto px-7 py-3.5 bg-white/5 border border-white/10 hover:border-spotify-green/40 text-white hover:text-spotify-green font-bold rounded-full backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-black/10"
             >
               Download for Android <ArrowRight className="w-4 h-4" />
@@ -103,25 +92,25 @@ export default function Home() {
         {/* Statistics Block */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-4 pt-20 border-t border-white/5 max-w-4xl mx-auto w-full z-10 relative mt-16">
           <div className="text-center">
-            <div className="text-4xl md:text-5xl font-extrabold text-[#E7F3E2] tracking-tight">100%</div>
-            <div className="text-xs text-spotify-light-gray font-medium tracking-wider uppercase mt-1.5">Private & Secure</div>
+            <div className="text-4xl md:text-5xl font-extrabold text-[#E2F1FF] tracking-tight">Zero</div>
+            <div className="text-xs text-spotify-light-gray font-medium tracking-wider uppercase mt-1.5">Distractions</div>
           </div>
           <div className="text-center border-t border-white/5 sm:border-t-0 pt-6 sm:pt-0">
-            <div className="text-4xl md:text-5xl font-extrabold text-[#E7F3E2] tracking-tight">0</div>
-            <div className="text-xs text-spotify-light-gray font-medium tracking-wider uppercase mt-1.5">Algorithms & Feeds</div>
+            <div className="text-4xl md:text-5xl font-extrabold text-[#E2F1FF] tracking-tight">Only</div>
+            <div className="text-xs text-spotify-light-gray font-medium tracking-wider uppercase mt-1.5">People You Chose</div>
           </div>
           <div className="text-center border-t border-white/5 sm:border-t-0 pt-6 sm:pt-0">
-            <div className="text-3xl md:text-4xl font-extrabold text-[#E7F3E2] tracking-tight pt-1">Circles</div>
-            <div className="text-xs text-spotify-light-gray font-medium tracking-wider uppercase mt-1.5">Not Crowds</div>
+            <div className="text-3xl md:text-4xl font-extrabold text-[#E2F1FF] tracking-tight pt-1">Direction</div>
+            <div className="text-xs text-spotify-light-gray font-medium tracking-wider uppercase mt-1.5">Not Noise</div>
           </div>
         </div>
       </section>
 
-      {/* Who It's Built For Section */}
-      <section id="who-it-s-built-for" className="py-24 px-6 max-w-6xl mx-auto relative z-10 border-t border-spotify-dark-gray/40">
+      {/* Philosophy Section */}
+      <section id="philosophy" className="py-24 px-6 max-w-6xl mx-auto relative z-10 border-t border-spotify-dark-gray/40">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-xs uppercase font-extrabold tracking-widest text-spotify-green mb-3">Designed with Intention</h2>
-          <h3 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white">Who is Mandala built for?</h3>
+          <h2 className="text-xs uppercase font-extrabold tracking-widest text-spotify-green mb-3">The Quiet Truth</h2>
+          <h3 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white">You already know what you want.</h3>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -129,9 +118,9 @@ export default function Home() {
           <div className="bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-2xl flex flex-col justify-between relative overflow-hidden group hover:border-white/20 hover:bg-white/10 transition-all duration-300">
             <div className="space-y-4">
               <div className="text-spotify-green text-3xl font-light font-mono">01</div>
-              <h4 className="text-xl font-bold text-white">The ones who already found their circle.</h4>
+              <h4 className="text-xl font-bold text-white">Life got loud. Not because the world changed.</h4>
               <p className="text-spotify-light-gray text-sm leading-relaxed font-light">
-                Family. The few friends who&apos;d actually show up. The handful of colleagues you&apos;d trust with anything. You don&apos;t need more connections, you need one place where the people you already trust don&apos;t get drowned out by ads, feeds, and strangers.
+                Because you started giving a little of yourself to everything. A little time here. A little energy there. Until you stopped noticing where it was all going. Every notification, every scroll, every stranger in your feed — pulling you a little further from the people who actually matter.
               </p>
             </div>
           </div>
@@ -140,9 +129,9 @@ export default function Home() {
           <div className="bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-2xl flex flex-col justify-between relative overflow-hidden group hover:border-white/20 hover:bg-white/10 transition-all duration-300">
             <div className="space-y-4">
               <div className="text-spotify-green text-3xl font-light font-mono">02</div>
-              <h4 className="text-xl font-bold text-white">The ones meeting theirs one room at a time.</h4>
+              <h4 className="text-xl font-bold text-white">The ones who move forward aren&apos;t smarter.</h4>
               <p className="text-spotify-light-gray text-sm leading-relaxed font-light">
-                New to a city, at a conference, deep in a collaboration that&apos;s actually going somewhere, the kind of person you click with the moment you&apos;re standing in front of them. Mandala exists for exactly the minute after that: scan a code, send an invite, keep the thread going without turning them into someone you just &ldquo;follow.&rdquo;
+                They just stopped spreading themselves thin. They chose what to look at. What to spend time on. Who to keep close. That&apos;s it. Not a productivity hack, not a morning routine — a decision about where their attention goes, and who gets to shape their direction.
               </p>
             </div>
           </div>
@@ -151,78 +140,78 @@ export default function Home() {
           <div className="bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-2xl flex flex-col justify-between relative overflow-hidden group hover:border-white/20 hover:bg-white/10 transition-all duration-300">
             <div className="space-y-4">
               <div className="text-spotify-green text-3xl font-light font-mono">03</div>
-              <h4 className="text-xl font-bold text-white">The ones done mistaking attention for connection.</h4>
+              <h4 className="text-xl font-bold text-white">The people around you were never just people.</h4>
               <p className="text-spotify-light-gray text-sm leading-relaxed font-light">
-                If watching someone&apos;s reels for two years without ever actually talking to them counts as staying in touch, something is broken. There&apos;s no feed on Mandala to hide behind. If you want to know how someone&apos;s doing, you talk to them. That&apos;s it.
+                They were direction. Every room you sat in. Every voice you let in. Was quietly shaping who you were becoming. Jana exists because your circle shouldn&apos;t be decided by an algorithm — it should be decided by you.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Name Origin Quote Banner */}
+      {/* Quote Banner */}
       <section className="py-20 px-6 max-w-4xl mx-auto text-center relative z-10 border-t border-spotify-dark-gray/20">
-        <div className="text-xl md:text-2xl font-light text-[#E7F3E2]/80 italic max-w-3xl mx-auto leading-relaxed">
-          &ldquo;A mandala is a small circle that contains an entire universe. We built Mandala because we believe your close circle is your entire universe.&rdquo;
+        <div className="text-xl md:text-2xl font-light text-[#E2F1FF]/80 italic max-w-3xl mx-auto leading-relaxed">
+          &ldquo;Somewhere, there&apos;s a version of you that isn&apos;t pulled in ten directions. That version only shows up when everything else goes quiet.&rdquo;
         </div>
       </section>
 
       {/* Features Section */}
       <section id="features" className="py-24 px-6 max-w-6xl mx-auto border-t border-spotify-dark-gray/40 relative z-10">
-        <h2 className="text-4xl font-extrabold text-center mb-16 tracking-tight">Features, Reframed</h2>
+        <h2 className="text-4xl font-extrabold text-center mb-16 tracking-tight">What Jana Removes — And Why</h2>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Feature 1 */}
           <div className="bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-xl hover:border-spotify-green/40 hover:bg-white/10 transition-all duration-300 hover:-translate-y-1">
             <ShieldCheck className="w-8 h-8 text-spotify-green mb-4" />
-            <h3 className="text-xl font-bold mb-3">Sealed Network</h3>
-            <p className="text-spotify-light-gray text-sm leading-relaxed">Most networks confuse reach with relationship. Mandala doesn&apos;t. Nobody finds you by searching, guessing, or syncing your number. Only the people you&apos;ve actually connected with, by a scan, an invite, a real moment between you, can ever reach you.</p>
+            <h3 className="text-xl font-bold mb-3">Sealed By Design</h3>
+            <p className="text-spotify-light-gray text-sm leading-relaxed">Nobody stumbles into your space. No one finds you by searching, guessing, or syncing contacts. The only people who can ever reach you are the ones you personally let in — through a scan, an invite, a real moment between you.</p>
           </div>
 
           {/* Feature 2 */}
           <div className="bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-xl hover:border-spotify-green/40 hover:bg-white/10 transition-all duration-300 hover:-translate-y-1">
             <QrCode className="w-8 h-8 text-spotify-green mb-4" />
-            <h3 className="text-xl font-bold mb-3">QR Code & Invite Links</h3>
-            <p className="text-spotify-light-gray text-sm leading-relaxed">The strongest threads always start in person: a conference, a dinner, an introduction that actually went somewhere. So that&apos;s the only way into Mandala, too. Scan a code or send a link the moment after you&apos;ve already decided, in the room, that someone&apos;s worth keeping.</p>
+            <h3 className="text-xl font-bold mb-3">Connections Start In Person</h3>
+            <p className="text-spotify-light-gray text-sm leading-relaxed">The best relationships don&apos;t start with a follow request. They start with eye contact, a handshake, a conversation that actually meant something. Jana only lets people in after that moment — through a QR scan or a direct invite.</p>
           </div>
 
           {/* Feature 3 */}
           <div className="bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-xl hover:border-spotify-green/40 hover:bg-white/10 transition-all duration-300 hover:-translate-y-1">
             <Ban className="w-8 h-8 text-spotify-green mb-4" />
-            <h3 className="text-xl font-bold mb-3">No Search, No Discovery</h3>
-            <p className="text-spotify-light-gray text-sm leading-relaxed">A search bar is an invitation for the wrong kind of connection: the kind where someone finds your name and calls it a relationship without ever standing in front of you. We didn&apos;t add a search bar to Mandala. We removed the one everyone else has.</p>
+            <h3 className="text-xl font-bold mb-3">No Search. On Purpose.</h3>
+            <p className="text-spotify-light-gray text-sm leading-relaxed">A search bar invites the wrong kind of connection — the kind where someone finds your name and calls it a relationship without ever standing in front of you. We didn&apos;t forget the search bar. We removed it deliberately.</p>
           </div>
 
           {/* Feature 4 */}
           <div className="bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-xl hover:border-spotify-green/40 hover:bg-white/10 transition-all duration-300 hover:-translate-y-1">
             <CreditCard className="w-8 h-8 text-spotify-green mb-4" />
-            <h3 className="text-xl font-bold mb-3">Digital Business Card</h3>
-            <p className="text-spotify-light-gray text-sm leading-relaxed">A first introduction matters. Your Mandala profile works like a card you hand someone once, your name, your work, a few honest lines about who you are. Not a public page anyone can stumble onto by typing your name into a search engine.</p>
+            <h3 className="text-xl font-bold mb-3">Your Card. Not Your Page.</h3>
+            <p className="text-spotify-light-gray text-sm leading-relaxed">Your Jana profile is a card you hand someone once — your name, what you do, a few honest lines about who you are. Not a public page anyone can stumble onto. Not a performance. Just an introduction you control.</p>
           </div>
 
           {/* Feature 5 */}
           <div className="bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-xl hover:border-spotify-green/40 hover:bg-white/10 transition-all duration-300 hover:-translate-y-1">
             <Sparkles className="w-8 h-8 text-spotify-green mb-4" />
-            <h3 className="text-xl font-bold mb-3">100% Genuine</h3>
-            <p className="text-spotify-light-gray text-sm leading-relaxed">Bots can fake a follower count. They can&apos;t fake a friend. Every person on Mandala is there because someone they actually know let them in. No exceptions.</p>
+            <h3 className="text-xl font-bold mb-3">Every Person Is Real</h3>
+            <p className="text-spotify-light-gray text-sm leading-relaxed">Bots can fake a follower count. They can&apos;t fake a friend. Every single person on Jana is there because someone they actually know let them in. No scraped contacts. No suggested friends. No exceptions.</p>
           </div>
 
           {/* Feature 6 */}
           <div className="bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-xl hover:border-spotify-green/40 hover:bg-white/10 transition-all duration-300 hover:-translate-y-1">
             <Zap className="w-8 h-8 text-spotify-green mb-4" />
-            <h3 className="text-xl font-bold mb-3">Attention Focused</h3>
-            <p className="text-spotify-light-gray text-sm leading-relaxed">We&apos;re not trying to keep you on Mandala longer. If anything, we&apos;re hoping you&apos;re here for less time, because the conversation that mattered already happened, and you should go live it.</p>
+            <h3 className="text-xl font-bold mb-3">Built To Let You Leave</h3>
+            <p className="text-spotify-light-gray text-sm leading-relaxed">We&apos;re not trying to keep you here longer. The conversation that mattered already happened. The plan was already made. Go live it. Jana doesn&apos;t compete for your attention — it gives your attention back.</p>
           </div>
 
-          {/* Highlighted Feature 7 (Human Referrals) */}
+          {/* Highlighted Feature (Human Referrals) */}
           <div className="md:col-span-2 lg:col-span-3 bg-white/5 backdrop-blur-md border border-spotify-green/20 p-8 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 hover:border-spotify-green/45 hover:bg-white/10 transition-all duration-300">
             <div className="space-y-3 max-w-2xl text-left">
               <div className="flex items-center gap-3">
                 <Users2 className="w-8 h-8 text-spotify-green" />
-                <h3 className="text-xl font-bold text-white">Human Referrals</h3>
+                <h3 className="text-xl font-bold text-white">Trust-Based Referrals</h3>
               </div>
               <p className="text-spotify-light-gray text-sm leading-relaxed font-light">
-                A circle grows by trust, not search indexing. Mandala lets you introduce people you trust to one another, keeping the network high-fidelity and secure through genuine human referrals rather than cold search bars.
+                Your circle grows the only way it should — through trust. Introduce the people you believe in to each other. No algorithms expanding your network behind your back. Every new connection is a deliberate choice, made by someone who has already earned your trust.
               </p>
             </div>
             <div className="px-4 py-2 bg-spotify-green/10 text-spotify-green border border-spotify-green/20 text-xs font-bold rounded-full uppercase tracking-wider whitespace-nowrap">
@@ -233,43 +222,43 @@ export default function Home() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-24 px-6 max-w-6xl mx-auto border-t border-spotify-dark-gray/40 relative z-10">
-        <h2 className="text-4xl font-extrabold text-center mb-16 tracking-tight">How It Works</h2>
+      <section id="why-it-matters" className="py-24 px-6 max-w-6xl mx-auto border-t border-spotify-dark-gray/40 relative z-10">
+        <h2 className="text-4xl font-extrabold text-center mb-16 tracking-tight">Four Steps. Then Silence.</h2>
 
         <div className="space-y-8 max-w-3xl mx-auto">
-          {/* How It Works Card 1 */}
+          {/* Step 1 */}
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 items-center sm:items-start bg-white/5 backdrop-blur-md border border-white/10 p-5 sm:p-6 rounded-2xl hover:bg-white/10 transition duration-300 text-center sm:text-left">
             <div className="flex-shrink-0 w-12 h-12 bg-spotify-green text-black rounded-full flex items-center justify-center font-extrabold text-lg shadow-md shadow-spotify-green/10">1</div>
             <div>
               <h3 className="text-2xl font-bold mb-2 text-white">Build your card</h3>
-              <p className="text-spotify-light-gray text-base font-light font-sans">Add your name, what you do, and a few lines that actually sound like you. This is your one true profile, no separate bio, no separate about page.</p>
+              <p className="text-spotify-light-gray text-base font-light font-sans">Your name, your work, a few lines that actually sound like you. Not a bio you wrote for an audience — an introduction you&apos;d give in person.</p>
             </div>
           </div>
 
-          {/* How It Works Card 2 */}
+          {/* Step 2 */}
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 items-center sm:items-start bg-white/5 backdrop-blur-md border border-white/10 p-5 sm:p-6 rounded-2xl hover:bg-white/10 transition duration-300 text-center sm:text-left">
             <div className="flex-shrink-0 w-12 h-12 bg-spotify-green text-black rounded-full flex items-center justify-center font-extrabold text-lg shadow-md shadow-spotify-green/10">2</div>
             <div>
               <h3 className="text-2xl font-bold mb-2 text-white">Share your code</h3>
-              <p className="text-spotify-light-gray text-base font-light font-sans">One QR code, one invite link. Showing it or sending it is the connection request. There&apos;s no follow button, because there&apos;s nothing to follow.</p>
+              <p className="text-spotify-light-gray text-base font-light font-sans">One QR code. One invite link. That&apos;s the connection request. There&apos;s no follow button — because there&apos;s nothing to follow. Just people, deciding to stay connected.</p>
             </div>
           </div>
 
-          {/* How It Works Card 3 */}
+          {/* Step 3 */}
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 items-center sm:items-start bg-white/5 backdrop-blur-md border border-white/10 p-5 sm:p-6 rounded-2xl hover:bg-white/10 transition duration-300 text-center sm:text-left">
             <div className="flex-shrink-0 w-12 h-12 bg-spotify-green text-black rounded-full flex items-center justify-center font-extrabold text-lg shadow-md shadow-spotify-green/10">3</div>
             <div>
               <h3 className="text-2xl font-bold mb-2 text-white">They&apos;re in</h3>
-              <p className="text-spotify-light-gray text-base font-light font-sans">When someone scans your code or accepts your invite, you&apos;re both inside the same sealed circle, visible to each other, invisible to everyone else.</p>
+              <p className="text-spotify-light-gray text-base font-light font-sans">Visible to each other. Invisible to everyone else. Your circle is sealed the moment it forms — no one looking in, no one listening in, no algorithm rearranging what you see.</p>
             </div>
           </div>
 
-          {/* How It Works Card 4 */}
+          {/* Step 4 */}
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 items-center sm:items-start bg-white/5 backdrop-blur-md border border-white/10 p-5 sm:p-6 rounded-2xl hover:bg-white/10 transition duration-300 text-center sm:text-left">
             <div className="flex-shrink-0 w-12 h-12 bg-spotify-green text-black rounded-full flex items-center justify-center font-extrabold text-lg shadow-md shadow-spotify-green/10">4</div>
             <div>
-              <h3 className="text-2xl font-bold mb-2 text-white">Talk like it matters</h3>
-              <p className="text-spotify-light-gray text-base font-light font-sans">No feed to scroll past first. No algorithm deciding who you see. Just the conversation you came here for.</p>
+              <h3 className="text-2xl font-bold mb-2 text-white">Now, talk.</h3>
+              <p className="text-spotify-light-gray text-base font-light font-sans">No feed to scroll past. No algorithm deciding who you hear from. Just the conversation you came here for — with the person who was already on your mind.</p>
             </div>
           </div>
         </div>
@@ -277,13 +266,13 @@ export default function Home() {
 
       {/* CTA Section */}
       <section className="py-24 px-6 max-w-4xl mx-auto text-center border-t border-spotify-dark-gray/40 relative z-10">
-        <h2 className="text-4xl font-extrabold mb-8 tracking-tight">Your circle is waiting.<br />The rest of the world can wait longer.</h2>
-        <p className="text-xl text-spotify-light-gray mb-12 font-light">Mandala isn&apos;t built for everyone. If that sentence didn&apos;t put you off, it&apos;s probably built for you.</p>
+        <h2 className="text-4xl font-extrabold mb-8 tracking-tight">You&apos;ve felt it before.<br />That version of you that shows up when everything else goes quiet.</h2>
+        <p className="text-xl text-spotify-light-gray mb-12 font-light">Jana isn&apos;t for everyone. It&apos;s for the people who already know who matters — and are done letting everything else get in the way.</p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <a
-            href="/mandala.apk"
-            download="mandala.apk"
+            href="/jana.apk"
+            download="jana.apk"
             className="w-full sm:w-auto px-7 py-3.5 bg-white/5 border border-white/10 hover:border-spotify-green/40 text-white hover:text-spotify-green font-bold rounded-full backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-black/10 text-lg"
           >
             <Smartphone className="w-5 h-5" />
@@ -302,12 +291,12 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-spotify-dark-gray/65 py-12 px-6 relative z-10">
         <div className="max-w-6xl mx-auto text-center text-spotify-light-gray text-xs flex flex-col items-center gap-4">
-          <div className="text-xs uppercase font-extrabold tracking-widest text-[#E7F3E2] opacity-70">
-            A circle, not a crowd.
+          <div className="text-xs uppercase font-extrabold tracking-widest text-[#E2F1FF] opacity-70">
+            Focus on who matters.
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/Mandala Icon 1.png" alt="Mandala Logo" className="w-6 h-6 object-contain opacity-55 hover:opacity-100 transition" />
-          <p>&copy; 2026 Mandala. All rights reserved. | <a href="/legal" className="hover:text-spotify-green transition duration-150">Privacy</a> | <a href="/legal" className="hover:text-spotify-green transition duration-150">Terms</a> | <a href="/delete-account" className="hover:text-spotify-green transition duration-150">Delete Account</a> | <a href="/support" className="hover:text-spotify-green transition duration-150">Support</a></p>
+          <img src="/Jana.png" alt="Jana Logo" className="w-6 h-6 object-contain opacity-55 hover:opacity-100 transition" />
+          <p>&copy; 2026 Jana. All rights reserved. | <a href="/legal" className="hover:text-spotify-green transition duration-150">Privacy</a> | <a href="/legal" className="hover:text-spotify-green transition duration-150">Terms</a> | <a href="/eula" className="hover:text-spotify-green transition duration-150">EULA</a> | <a href="/delete-account" className="hover:text-spotify-green transition duration-150">Delete Account</a> | <a href="/support" className="hover:text-spotify-green transition duration-150">Support</a></p>
         </div>
       </footer>
     </div>

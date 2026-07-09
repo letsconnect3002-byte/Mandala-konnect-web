@@ -57,10 +57,10 @@ export default function RedirectPage() {
         {device === 'detecting' && (
           <div className="space-y-6 py-8 flex flex-col items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/Mandala Icon 1.png" alt="Mandala Logo" className="w-16 h-16 object-contain animate-pulse" />
+            <img src="/Jana.png" alt="Jana Logo" className="w-16 h-16 object-contain animate-pulse" />
             <div className="w-8 h-8 border-4 border-spotify-green border-t-transparent rounded-full animate-spin" />
             <div>
-              <h1 className="text-2xl font-bold mb-2">Connecting to Mandala</h1>
+              <h1 className="text-2xl font-bold mb-2">Connecting to Jana</h1>
               <p className="text-spotify-light-gray text-sm font-light">Detecting your device...</p>
             </div>
           </div>
@@ -69,11 +69,11 @@ export default function RedirectPage() {
         {device === 'android' && (
           <div className="space-y-6 py-8 flex flex-col items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/Mandala Icon 1.png" alt="Mandala Logo" className="w-16 h-16 object-contain" />
+            <img src="/Jana.png" alt="Jana Logo" className="w-16 h-16 object-contain" />
             <div>
               <h1 className="text-2xl font-bold mb-2">Redirecting to Play Store</h1>
               <p className="text-spotify-light-gray text-sm leading-relaxed mb-6">
-                Opening the Mandala app in the Google Play Store. If you are not redirected automatically, please click below.
+                Opening the Jana app in the Google Play Store. If you are not redirected automatically, please click below.
               </p>
             </div>
             <a 
@@ -88,17 +88,17 @@ export default function RedirectPage() {
         {device === 'ios' && (
           <div className="space-y-6 py-4 flex flex-col items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/Mandala Icon 1.png" alt="Mandala Logo" className="w-16 h-16 object-contain mb-2" />
+            <img src="/Jana.png" alt="Jana Logo" className="w-16 h-16 object-contain mb-2" />
             <div>
-              <h1 className="text-2xl font-bold mb-1">Mandala for iOS</h1>
+              <h1 className="text-2xl font-bold mb-1">Jana for iOS</h1>
               <div className="inline-block px-3 py-1 bg-spotify-green/20 text-spotify-green border border-spotify-green/30 text-xs font-bold rounded-full uppercase tracking-wider mb-6">
                 Coming Soon
               </div>
               <p className="text-spotify-light-gray leading-relaxed mb-4 text-sm font-light">
-                We are currently building and perfecting the Mandala iOS app to ensure it meets our standards for private, high-fidelity communication.
+                We are currently building and perfecting the Jana iOS app to ensure it meets our standards for private, high-fidelity communication.
               </p>
               <p className="text-spotify-light-gray text-xs leading-relaxed mb-8 font-light">
-                In the meantime, Mandala is fully available on Android. If you have an Android device, you can install the app from the Play Store.
+                In the meantime, Jana is fully available on Android. If you have an Android device, you can install the app from the Play Store.
               </p>
             </div>
             <div className="flex flex-col gap-3 w-full">
@@ -126,11 +126,11 @@ export default function RedirectPage() {
         {device === 'desktop' && (
           <div className="space-y-6 py-4 flex flex-col items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/Mandala Icon 1.png" alt="Mandala Logo" className="w-16 h-16 object-contain mb-2" />
+            <img src="/Jana.png" alt="Jana Logo" className="w-16 h-16 object-contain mb-2" />
             <div>
-              <h1 className="text-2xl font-bold mb-2">Get Mandala App</h1>
+              <h1 className="text-2xl font-bold mb-2">Get Jana App</h1>
               <p className="text-spotify-light-gray text-sm mb-6 leading-relaxed font-light">
-                Mandala is designed to run on your mobile device. Scan the QR code below using your phone or choose a store.
+                Jana is designed to run on your mobile device. Scan the QR code below using your phone or choose a store.
               </p>
             </div>
             
@@ -140,7 +140,7 @@ export default function RedirectPage() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img 
                   src={qrUrl} 
-                  alt="Scan to Download Mandala"
+                  alt="Scan to Download Jana"
                   className="w-40 h-40"
                 />
               </div>
