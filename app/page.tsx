@@ -79,14 +79,28 @@ export default function Home() {
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
             <a
-              href="/jana.apk"
-              download="jana.apk"
+              href="https://play.google.com/store/apps/details?id=com.india.jana"
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-full sm:w-auto px-7 py-3.5 bg-white/5 border border-white/10 hover:border-spotify-green/40 text-white hover:text-spotify-green font-bold rounded-full backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-black/10"
             >
-              Download for Android <ArrowRight className="w-4 h-4" />
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M3.609 2.056A1.996 1.996 0 0 0 3 3.563v16.874c0 .59.26 1.127.674 1.503l.06.054L15.02 12 3.67 2l-.061.056zM18.064 9.87l-3.037 3.036 3.038 3.038 4.269-2.436c1.171-.667 1.171-2.507 0-3.175l-4.27-2.463zM4.774 2.89l10.21 10.21 3.08-3.08L4.774 2.89zm0 18.22l13.29-7.574-3.08-3.08-10.21 10.654z" />
+              </svg>
+              Download for Android
+            </a>
+            <a
+              href="https://apps.apple.com/us/app/jana-mandala/id6785388442"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto px-7 py-3.5 bg-white/5 border border-white/10 hover:border-spotify-green/40 text-white hover:text-spotify-green font-bold rounded-full backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-black/10"
+            >
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M18.71,19.5C17.88,20.74 17,21.95 15.66,21.97C14.32,22 13.89,21.18 12.37,21.18C10.84,21.18 10.37,21.95 9.1,22C7.79,22.05 6.8,20.68 5.96,19.47C4.25,17 2.94,12.45 4.7,9.39C5.57,7.87 7.13,6.91 8.82,6.88C10.1,6.86 11.32,7.75 12.11,7.75C12.89,7.75 14.37,6.68 15.92,6.84C16.57,6.87 18.39,7.1 19.56,8.82C19.47,8.88 17.39,10.1 17.41,12.63C17.44,15.65 20.06,16.66 20.1,16.67C20.08,16.74 19.67,18.11 18.71,19.5M15.97,4.17C16.63,3.37 17.07,2.28 16.95,1C16,1.04 14.9,1.6 14.24,2.38C13.68,3.04 13.19,4.14 13.34,5.39C14.39,5.47 15.4,4.88 15.97,4.17Z" />
+              </svg>
+              Download for iOS
             </a>
           </div>
-          <p className="text-xs text-spotify-light-gray font-medium mt-2">iOS Version Coming Soon</p>
         </div>
 
         {/* Statistics Block */}
@@ -271,21 +285,34 @@ export default function Home() {
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <a
-            href="/jana.apk"
-            download="jana.apk"
-            className="w-full sm:w-auto px-7 py-3.5 bg-white/5 border border-white/10 hover:border-spotify-green/40 text-white hover:text-spotify-green font-bold rounded-full backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-black/10 text-lg"
+            href="https://play.google.com/store/apps/details?id=com.india.jana"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto px-7 py-3.5 bg-white/5 border border-white/10 hover:border-spotify-green/40 text-white hover:text-spotify-green font-bold rounded-full backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-black/10 text-base"
           >
-            <Smartphone className="w-5 h-5" />
+            <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+              <path d="M3.609 2.056A1.996 1.996 0 0 0 3 3.563v16.874c0 .59.26 1.127.674 1.503l.06.054L15.02 12 3.67 2l-.061.056zM18.064 9.87l-3.037 3.036 3.038 3.038 4.269-2.436c1.171-.667 1.171-2.507 0-3.175l-4.27-2.463zM4.774 2.89l10.21 10.21 3.08-3.08L4.774 2.89zm0 18.22l13.29-7.574-3.08-3.08-10.21 10.654z" />
+            </svg>
             Download for Android
           </a>
           <a
+            href="https://apps.apple.com/us/app/jana-mandala/id6785388442"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto px-7 py-3.5 bg-white/5 border border-white/10 hover:border-spotify-green/40 text-white hover:text-spotify-green font-bold rounded-full backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-black/10 text-base"
+          >
+            <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+              <path d="M18.71,19.5C17.88,20.74 17,21.95 15.66,21.97C14.32,22 13.89,21.18 12.37,21.18C10.84,21.18 10.37,21.95 9.1,22C7.79,22.05 6.8,20.68 5.96,19.47C4.25,17 2.94,12.45 4.7,9.39C5.57,7.87 7.13,6.91 8.82,6.88C10.1,6.86 11.32,7.75 12.11,7.75C12.89,7.75 14.37,6.68 15.92,6.84C16.57,6.87 18.39,7.1 19.56,8.82C19.47,8.88 17.39,10.1 17.41,12.63C17.44,15.65 20.06,16.66 20.1,16.67C20.08,16.74 19.67,18.11 18.71,19.5M15.97,4.17C16.63,3.37 17.07,2.28 16.95,1C16,1.04 14.9,1.6 14.24,2.38C13.68,3.04 13.19,4.14 13.34,5.39C14.39,5.47 15.4,4.88 15.97,4.17Z" />
+            </svg>
+            Download for iOS
+          </a>
+          <a
             href="/support"
-            className="w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white text-white font-bold rounded-full hover:scale-105 active:scale-95 transition-all duration-200 text-lg flex items-center justify-center backdrop-blur-md"
+            className="w-full sm:w-auto px-7 py-3.5 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white text-white font-bold rounded-full hover:scale-105 active:scale-95 transition-all duration-200 text-base flex items-center justify-center backdrop-blur-md"
           >
             Support
           </a>
         </div>
-        <p className="text-sm text-spotify-light-gray mt-4">iOS App Coming Soon</p>
       </section>
 
       {/* Footer */}
