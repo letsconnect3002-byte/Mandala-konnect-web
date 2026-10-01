@@ -35,6 +35,7 @@ export interface VouchItem {
   id: string;
   statement?: string | null;
   relationship_type?: string | null;
+  context_tag?: string | null;
   optional_note?: string | null;
   created_at?: string | null;
   voucher?: {
@@ -198,6 +199,62 @@ export function getCompanyLogoUrl(url?: string): string {
     }
   } catch {}
   return '';
+}
+
+export function formatTimeAgo(dateStr?: string | null): string {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return '';
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  if (diffMs < 0) return 'Just now';
+  const diffSec = Math.floor(diffMs / 1000);
+  if (diffSec < 60) return 'Just now';
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffHours = Math.floor(diffMin / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays <= 30) return `${diffDays}d ago`;
+  if (diffDays <= 365) return `${Math.floor(diffDays / 30)}mo ago`;
+  return `${Math.floor(diffDays / 365)}y ago`;
+}
+
+export function parseVouchData(vouch: VouchItem) {
+  const rawStatement = vouch.statement || '';
+  let relationshipType = vouch.relationship_type?.trim() || null;
+  let optionalNote = vouch.optional_note?.trim() || null;
+  let contextTag: string | null = vouch.context_tag?.trim() || null;
+
+  // Extract from raw statement buffer if not present in columns
+  if (!relationshipType && rawStatement.includes('REL:[')) {
+    const match = rawStatement.match(/REL:\[(.*?)\]/);
+    if (match) relationshipType = match[1].trim();
+  }
+
+  if (!contextTag && rawStatement.includes('TAG:[')) {
+    const match = rawStatement.match(/TAG:\[(.*?)\]/);
+    if (match) contextTag = match[1].trim();
+  }
+
+  if (!optionalNote && rawStatement.includes('NOTE:[')) {
+    const match = rawStatement.match(/NOTE:\[(.*?)\]/);
+    if (match) optionalNote = match[1].trim();
+  }
+
+  // Check if rawStatement is just the serialization buffer (REL:[...] INTENTS:[...] NOTE:[...])
+  const isSerializedBuffer = /REL:\[|INTENTS:\[|NOTE:\[|TAG:\[/.test(rawStatement);
+  let cleanStatement: string | null = null;
+  if (!isSerializedBuffer && rawStatement.trim() && rawStatement.trim().toUpperCase() !== 'VOUCH') {
+    cleanStatement = rawStatement.trim();
+  }
+
+  return {
+    relationshipType,
+    contextTag,
+    optionalNote,
+    cleanStatement,
+  };
 }
 
 export default function ProfileView({ profile }: ProfileViewProps) {
@@ -785,16 +842,21 @@ export default function ProfileView({ profile }: ProfileViewProps) {
                 const voucherAvatar = vouch.voucher?.avatar_url;
                 const voucherInitial = voucherName.charAt(0).toUpperCase();
                 const voucherHandle = vouch.voucher?.handle;
-                const voucherRole = vouch.voucher?.profession || vouch.voucher?.company;
+                const voucherRole = [vouch.voucher?.profession, vouch.voucher?.company]
+                  .filter(Boolean)
+                  .join(' • ');
+                const timeAgo = formatTimeAgo(vouch.created_at);
+                const { relationshipType, contextTag, optionalNote, cleanStatement } = parseVouchData(vouch);
 
                 return (
                   <div
                     key={vouch.id}
-                    className="bg-[#0F1013] border border-white/[0.08] rounded-[16px] p-3.5 space-y-2 transition"
+                    className="bg-[#0F1013] border border-white/[0.08] rounded-[16px] p-3.5 space-y-2.5 transition"
                   >
-                    <div className="flex items-center justify-between gap-2">
+                    {/* Top Row: Avatar, Voucher Name & Role, and Time Ago */}
+                    <div className="flex items-center justify-between gap-2.5">
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-7 h-7 rounded-full overflow-hidden bg-[#1E1F32] flex items-center justify-center flex-shrink-0 border border-white/10">
+                        <div className="w-9 h-9 rounded-full overflow-hidden bg-[#1E1F32] flex items-center justify-center flex-shrink-0 border border-white/15">
                           {voucherAvatar ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
@@ -803,46 +865,69 @@ export default function ProfileView({ profile }: ProfileViewProps) {
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <span className="text-[11px] font-bold text-white">{voucherInitial}</span>
+                            <span className="text-xs font-bold text-white">{voucherInitial}</span>
                           )}
                         </div>
                         <div className="min-w-0">
                           {voucherHandle ? (
                             <Link
                               href={`/x/${voucherHandle}`}
-                              className="text-xs font-bold text-white hover:text-[#00F2FE] transition block truncate"
+                              className="text-[13.5px] font-bold text-white hover:text-[#00F2FE] transition block truncate"
                             >
                               {voucherName}
                             </Link>
                           ) : (
-                            <div className="text-xs font-bold text-white truncate">{voucherName}</div>
+                            <div className="text-[13.5px] font-bold text-white truncate">{voucherName}</div>
                           )}
                           {voucherRole && (
-                            <div className="text-[10px] text-[#A1A4B0] truncate">
+                            <div className="text-[11.5px] text-[#A1A4B0] truncate">
                               {voucherRole}
                             </div>
                           )}
                         </div>
                       </div>
 
-                      {vouch.relationship_type && (
-                        <span className="px-2 py-0.5 rounded-full bg-[#00F2FE]/10 border border-[#00F2FE]/30 text-[#00F2FE] text-[9px] font-bold uppercase tracking-wider flex-shrink-0">
-                          {vouch.relationship_type}
+                      {timeAgo && (
+                        <span className="text-[11px] text-[#A1A4B0] flex-shrink-0">
+                          {timeAgo}
                         </span>
                       )}
                     </div>
 
-                    {vouch.statement && (
-                      <p className="text-xs text-white/90 leading-relaxed italic border-l-2 border-[#00F2FE] pl-2.5 my-1.5 font-medium">
-                        &ldquo;{vouch.statement}&rdquo;
-                      </p>
-                    )}
+                    {/* Statement Body matching Flutter VouchesListWidget */}
+                    {relationshipType ? (
+                      <div className="w-full p-3 bg-white/[0.04] border border-white/10 rounded-xl space-y-2">
+                        <div className="flex items-center gap-2">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[6px] bg-white/[0.08] border border-white/12 text-white text-[11px] font-bold">
+                            <ShieldCheck className="w-3 h-3 text-white" />
+                            <span>{relationshipType}</span>
+                          </span>
+                          {contextTag && (
+                            <span className="text-xs font-semibold text-white/90 truncate">
+                              {contextTag}
+                            </span>
+                          )}
+                        </div>
 
-                    {vouch.optional_note && (
-                      <p className="text-[11px] text-white/60 leading-relaxed pl-2.5">
-                        {vouch.optional_note}
-                      </p>
-                    )}
+                        {optionalNote && (
+                          <p className="text-[12.5px] text-white/90 italic font-normal leading-relaxed">
+                            &ldquo;{optionalNote}&rdquo;
+                          </p>
+                        )}
+                      </div>
+                    ) : cleanStatement ? (
+                      <div className="w-full px-3 py-2.5 rounded-xl bg-white/[0.03] border-l-2 border-white/25">
+                        <p className="text-[12.5px] text-white/90 italic font-normal leading-relaxed">
+                          &ldquo;{cleanStatement}&rdquo;
+                        </p>
+                      </div>
+                    ) : optionalNote ? (
+                      <div className="w-full px-3 py-2.5 rounded-xl bg-white/[0.03] border-l-2 border-white/25">
+                        <p className="text-[12.5px] text-white/90 italic font-normal leading-relaxed">
+                          &ldquo;{optionalNote}&rdquo;
+                        </p>
+                      </div>
+                    ) : null}
                   </div>
                 );
               })}
