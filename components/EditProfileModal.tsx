@@ -24,6 +24,7 @@ interface EditProfileModalProps {
   onClose: () => void;
   profile: ProfileData;
   onSaveSuccess: (updated: Partial<ProfileData>) => void;
+  onDeleteAccount?: () => void;
 }
 
 export default function EditProfileModal({
@@ -31,6 +32,7 @@ export default function EditProfileModal({
   onClose,
   profile,
   onSaveSuccess,
+  onDeleteAccount,
 }: EditProfileModalProps) {
   const [activeTab, setActiveTab] = useState<'basic' | 'experience' | 'education' | 'skills' | 'socials'>('basic');
   const [saving, setSaving] = useState(false);
@@ -455,6 +457,28 @@ export default function EditProfileModal({
                   className="w-full bg-[#17181D] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#00F2FE] resize-none leading-relaxed"
                 />
               </div>
+
+              {/* Danger Zone: Delete Account */}
+              {onDeleteAccount && (
+                <div className="pt-4 border-t border-white/[0.08] mt-6">
+                  <div className="flex items-center justify-between p-3.5 rounded-xl bg-red-500/5 border border-red-500/20">
+                    <div>
+                      <p className="text-xs font-semibold text-red-400">Delete Account</p>
+                      <p className="text-[11px] text-white/50">Permanently delete your profile and all associated data</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onClose();
+                        onDeleteAccount();
+                      }}
+                      className="px-3.5 py-1.5 rounded-lg border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 text-xs font-semibold transition"
+                    >
+                      Delete Account
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

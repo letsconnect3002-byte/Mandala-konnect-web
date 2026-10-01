@@ -23,11 +23,13 @@ import {
   UserPlus,
   Pencil,
   Sparkles,
+  Trash2,
 } from 'lucide-react';
 import { supabase, ensureUserProfile, UserProfileSummary } from '@/lib/supabase';
 import AuthModal from '@/components/AuthModal';
 import VouchModal from '@/components/VouchModal';
 import EditProfileModal from '@/components/EditProfileModal';
+import DeleteAccountModal from '@/components/DeleteAccountModal';
 
 export interface VouchItem {
   id: string;
@@ -211,6 +213,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
   } | null>(null);
   const [connectModalOpen, setConnectModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   // Auth & Vouch state
   const [currentUser, setCurrentUser] = useState<UserProfileSummary | null>(null);
@@ -232,6 +235,10 @@ export default function ProfileView({ profile }: ProfileViewProps) {
   const handleBack = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
 
+    if (deleteModalOpen) {
+      setDeleteModalOpen(false);
+      return;
+    }
     if (editModalOpen) {
       setEditModalOpen(false);
       return;
@@ -342,6 +349,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        if (deleteModalOpen) setDeleteModalOpen(false);
         if (editModalOpen) setEditModalOpen(false);
         if (socialModal) setSocialModal(null);
         if (connectModalOpen) setConnectModalOpen(false);
@@ -353,7 +361,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [editModalOpen, socialModal, connectModalOpen, vouchModalOpen, authModalOpen, userMenuOpen]);
+  }, [deleteModalOpen, editModalOpen, socialModal, connectModalOpen, vouchModalOpen, authModalOpen, userMenuOpen]);
 
   const handleVouchClick = () => {
     if (!currentUser) {
@@ -658,10 +666,22 @@ export default function ProfileView({ profile }: ProfileViewProps) {
                         </Link>
                       )
                     )}
+                    <div className="h-px bg-white/10 my-1" />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUserMenuOpen(false);
+                        setDeleteModalOpen(true);
+                      }}
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-red-400 hover:bg-red-500/10 transition text-left"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Delete Account</span>
+                    </button>
                     <button
                       type="button"
                       onClick={handleSignOut}
-                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-red-400 hover:bg-red-500/10 transition text-left"
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-white/70 hover:bg-white/10 hover:text-white transition text-left"
                     >
                       <LogOut className="w-3.5 h-3.5" />
                       <span>Sign Out</span>
@@ -1488,6 +1508,21 @@ export default function ProfileView({ profile }: ProfileViewProps) {
           onClose={() => setEditModalOpen(false)}
           profile={profileState}
           onSaveSuccess={handleProfileUpdated}
+          onDeleteAccount={() => setDeleteModalOpen(true)}
+        />
+      )}
+
+      {/* Delete Account Modal */}
+      {currentUser && (
+        <DeleteAccountModal
+          isOpen={deleteModalOpen}
+          onClose={() => setDeleteModalOpen(false)}
+          profileId={currentUser.id}
+          profileName={currentUser.name}
+          profileHandle={currentUser.handle || undefined}
+          onSuccess={() => {
+            window.location.href = '/';
+          }}
         />
       )}
     </div>

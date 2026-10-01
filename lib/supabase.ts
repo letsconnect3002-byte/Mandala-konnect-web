@@ -177,3 +177,46 @@ export async function getCurrentUserProfile(): Promise<UserProfileSummary | null
   if (!session?.user) return null;
   return ensureUserProfile(session.user);
 }
+
+export async function deleteUserProfileAccount(profileId: number): Promise<{ success: boolean; error?: string }> {
+  try {
+    // 1. Try atomic database RPC function first
+    const { error: rpcErr } = await supabase.rpc('delete_user_account', {
+      target_profile_id: profileId,
+    });
+
+    if (rpcErr) {
+      console.warn('RPC delete_user_account returned error, falling back to direct table deletes:', rpcErr);
+      // Fallback: manually delete referencing tables with NO ACTION
+      await supabase.from('network_stats').delete().eq('user_id', profileId);
+      await supabase.from('post_seen').delete().eq('viewer_id', profileId);
+      await supabase.from('posts').delete().eq('author_id', profileId);
+      await supabase.from('referral_requests').delete().eq('requester_id', profileId);
+      await supabase.from('referral_requests').delete().eq('target_id', profileId);
+      await supabase.from('referral_requests').delete().eq('via_user_id', profileId);
+
+      const { error: profileErr } = await supabase.from('profiles').delete().eq('id', profileId);
+      if (profileErr) {
+        return { success: false, error: profileErr.message };
+      }
+    }
+
+    // 2. Sign out auth session
+    await supabase.auth.signOut();
+
+    // 3. Clear local storage and session storage
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    return { success: true };
+  } catch (err: any) {
+    console.error('Exception deleting account:', err);
+    return { success: false, error: err?.message || 'Failed to delete account' };
+  }
+}
