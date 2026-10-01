@@ -151,25 +151,6 @@ export default function ProfileView({ profile }: ProfileViewProps) {
   useEffect(() => {
     let isMounted = true;
 
-    const checkUser = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user && isMounted) {
-          const myProfile = await ensureUserProfile(session.user);
-          if (isMounted) {
-            setCurrentUser(myProfile);
-            if (myProfile && profile.id) {
-              checkVouchStatus(myProfile.id, profile.id);
-            }
-          }
-        }
-      } catch (err) {
-        console.error('Session check error:', err);
-      }
-    };
-
-    checkUser();
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user && isMounted) {
         const myProfile = await ensureUserProfile(session.user);
