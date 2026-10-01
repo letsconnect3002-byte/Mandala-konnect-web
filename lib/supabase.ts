@@ -16,25 +16,48 @@ export interface UserProfileSummary {
   avatar_url?: string | null;
 }
 
-export function generateRandom4Digits(): string {
-  return Math.floor(1000 + Math.random() * 9000).toString();
+/**
+ * Smartly generates a deterministic 4-digit number (1000 - 9999) using:
+ * 1. Current Date & Time (day, hour, minute, second, millisecond)
+ * 2. The unique user ID string
+ * No random functions (Math.random) are used.
+ */
+export function generateSmart4Digits(userId?: string, offset: number = 0): string {
+  const now = new Date();
+  const dateTimeScore =
+    now.getDate() * 10000 +
+    now.getHours() * 3600 +
+    now.getMinutes() * 60 +
+    now.getSeconds() +
+    now.getMilliseconds() +
+    offset;
+
+  let idHash = 0;
+  if (userId) {
+    for (let i = 0; i < userId.length; i++) {
+      idHash = ((idHash << 5) - idHash + userId.charCodeAt(i)) | 0;
+    }
+  }
+
+  const combined = Math.abs((Math.abs(idHash) + dateTimeScore) % 9000);
+  return (1000 + combined).toString();
 }
 
-export function generateHandleSlug(input: string): string {
+export function generateHandleSlug(input: string, userId?: string): string {
   let s = input.toLowerCase().trim();
   s = s.replace(/[^a-z0-9]/g, '');
   if (!s) s = 'user';
-  return `${s}${generateRandom4Digits()}`;
+  return `${s}${generateSmart4Digits(userId)}`;
 }
 
-export async function generateUniqueHandle(input: string): Promise<string> {
+export async function generateUniqueHandle(input: string, userId?: string): Promise<string> {
   let s = input.toLowerCase().trim();
   s = s.replace(/[^a-z0-9]/g, '');
   if (!s) s = 'user';
 
-  // Try generating a unique 4-digit suffixed handle
+  // Check up to 10 deterministically offset attempts using date/time + user ID
   for (let attempt = 0; attempt < 10; attempt++) {
-    const candidate = `${s}${generateRandom4Digits()}`;
+    const candidate = `${s}${generateSmart4Digits(userId, attempt)}`;
     const { data: existing } = await supabase
       .from('profiles')
       .select('id')
@@ -46,7 +69,7 @@ export async function generateUniqueHandle(input: string): Promise<string> {
     }
   }
 
-  return `${s}${generateRandom4Digits()}`;
+  return `${s}${generateSmart4Digits(userId, 10)}`;
 }
 
 // In-flight promise cache to prevent concurrent race conditions on profile creation
@@ -90,7 +113,7 @@ export async function ensureUserProfile(
         '';
       const profession = extra?.profession?.trim() || 'Member';
       const baseName = name !== 'User' ? name : (email.split('@')[0] || 'user');
-      const handle = await generateUniqueHandle(baseName);
+      const handle = await generateUniqueHandle(baseName, user.id);
 
       const defaultFieldAssignments = {
         name: { c: true, p: true, pr: false },
