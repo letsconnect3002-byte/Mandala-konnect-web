@@ -15,6 +15,7 @@ import {
   Mail,
   Smartphone,
   ChevronDown,
+  Lock,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { ExperienceItem, EducationItem, ProfileData } from '@/app/x/[handle]/ProfileView';
@@ -38,9 +39,8 @@ export default function EditProfileModal({
   const [saving, setSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Form State
+  // Form State (handle is immutable and cannot be edited)
   const [name, setName] = useState(profile.name || '');
-  const [handle, setHandle] = useState(profile.handle || '');
   const [profession, setProfession] = useState(profile.profession || '');
   const [company, setCompany] = useState(profile.company || '');
   const [email, setEmail] = useState(profile.email || profile.professional_email || '');
@@ -188,8 +188,6 @@ export default function EditProfileModal({
       setSaving(true);
       setErrorMsg(null);
 
-      const cleanHandle = handle.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '') || profile.handle;
-
       // Prepare DB payloads in snake_case format matching mobile app
       const experienceDb = experienceList
         .filter((e) => e.title.trim() || e.company.trim())
@@ -225,7 +223,6 @@ export default function EditProfileModal({
 
       const updatePayload: Record<string, any> = {
         name: name.trim(),
-        handle: cleanHandle,
         profession: profession.trim(),
         company: finalCompany,
         email: email.trim(),
@@ -371,20 +368,18 @@ export default function EditProfileModal({
                 />
               </div>
 
-              {/* Handle */}
+              {/* Handle (Immutable) */}
               <div>
-                <label className="text-[11px] font-bold text-[#A1A4B0] uppercase tracking-wider block mb-1.5">
-                  Handle / Username (@)
-                </label>
-                <div className="flex items-center bg-[#17181D] border border-white/10 rounded-xl px-3.5 py-2.5 text-sm">
-                  <span className="text-white/40 mr-1">@</span>
-                  <input
-                    type="text"
-                    value={handle}
-                    onChange={(e) => setHandle(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))}
-                    placeholder="handle"
-                    className="w-full bg-transparent text-white placeholder-white/20 focus:outline-none"
-                  />
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-[11px] font-bold text-[#A1A4B0] uppercase tracking-wider flex items-center gap-1.5">
+                    <Lock className="w-3 h-3 text-white/40" />
+                    <span>Handle</span>
+                  </label>
+                  <span className="text-[10px] text-white/40 font-medium">Handle cannot be changed</span>
+                </div>
+                <div className="flex items-center bg-[#17181D]/60 border border-white/5 rounded-xl px-3.5 py-2.5 text-sm cursor-not-allowed select-none">
+                  <span className="text-white/30 mr-1 font-mono">@</span>
+                  <span className="text-white/70 font-mono text-sm">{profile.handle || 'user'}</span>
                 </div>
               </div>
 
