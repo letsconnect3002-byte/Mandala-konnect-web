@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   ChevronLeft,
   Copy,
@@ -87,6 +88,7 @@ interface ProfileViewProps {
 }
 
 export default function ProfileView({ profile }: ProfileViewProps) {
+  const router = useRouter();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [socialModal, setSocialModal] = useState<{
@@ -96,6 +98,49 @@ export default function ProfileView({ profile }: ProfileViewProps) {
     url: string;
   } | null>(null);
   const [connectModalOpen, setConnectModalOpen] = useState(false);
+
+  const handleBack = (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
+
+    // If any modal is open, dismiss it first
+    if (socialModal) {
+      setSocialModal(null);
+      return;
+    }
+    if (connectModalOpen) {
+      setConnectModalOpen(false);
+      return;
+    }
+    if (vouchModalOpen) {
+      setVouchModalOpen(false);
+      return;
+    }
+    if (authModalOpen) {
+      setAuthModalOpen(false);
+      return;
+    }
+    if (userMenuOpen) {
+      setUserMenuOpen(false);
+      return;
+    }
+
+    if (typeof window !== 'undefined') {
+      const hasNextHistory =
+        window.history.state &&
+        typeof window.history.state.idx === 'number' &&
+        window.history.state.idx > 0;
+      const isInternalReferrer =
+        !!document.referrer && document.referrer.startsWith(window.location.origin);
+      const hasHistory = window.history.length > 1;
+
+      if (hasNextHistory || isInternalReferrer || hasHistory) {
+        router.back();
+        return;
+      }
+    }
+
+    router.push('/');
+  };
 
   // Auth & Vouch state
   const [currentUser, setCurrentUser] = useState<UserProfileSummary | null>(null);
@@ -170,6 +215,22 @@ export default function ProfileView({ profile }: ProfileViewProps) {
       subscription.unsubscribe();
     };
   }, [profile.id]);
+
+  // Handle ESC key to dismiss any open modals or menus
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (socialModal) setSocialModal(null);
+        if (connectModalOpen) setConnectModalOpen(false);
+        if (vouchModalOpen) setVouchModalOpen(false);
+        if (authModalOpen) setAuthModalOpen(false);
+        if (userMenuOpen) setUserMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [socialModal, connectModalOpen, vouchModalOpen, authModalOpen, userMenuOpen]);
 
   const handleVouchClick = () => {
     if (!currentUser) {
@@ -399,13 +460,14 @@ export default function ProfileView({ profile }: ProfileViewProps) {
       <div className="max-w-[430px] w-full mx-auto min-h-screen px-4 pt-5 pb-28 sm:border-x sm:border-white/[0.06] bg-[#000000] relative">
         {/* Header Capsule matching _buildSkeletonHeader() */}
         <header className="bg-[#0F1013] border border-white/10 rounded-[30px] py-2 px-3.5 flex items-center justify-between shadow-lg mb-6">
-          <Link
-            href="/"
-            aria-label="Back to Home"
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/15 active:scale-95 transition flex items-center justify-center text-white flex-shrink-0"
+          <button
+            type="button"
+            onClick={handleBack}
+            aria-label="Go Back"
+            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/15 active:scale-95 transition flex items-center justify-center text-white flex-shrink-0 cursor-pointer"
           >
             <ChevronLeft className="w-4 h-4 ml-[-1px]" />
-          </Link>
+          </button>
           
           <div className="text-center flex-1 mx-2 min-w-0">
             <h1 className="text-[17px] font-bold text-white tracking-tight leading-snug truncate">Profile Space</h1>
