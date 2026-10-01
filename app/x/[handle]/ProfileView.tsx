@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft,
@@ -15,8 +15,17 @@ import {
   X as CloseIcon,
   GraduationCap,
   Sparkles,
-  QrCode
+  QrCode,
+  Plus,
+  CheckCircle2,
+  ChevronDown,
+  User as UserIcon,
+  LogOut,
+  ShieldCheck,
 } from 'lucide-react';
+import { supabase, ensureUserProfile, UserProfileSummary } from '@/lib/supabase';
+import AuthModal from '@/components/AuthModal';
+import VouchModal from '@/components/VouchModal';
 
 export interface VouchItem {
   id: string;
@@ -89,6 +98,148 @@ export default function ProfileView({ profile }: ProfileViewProps) {
     url: string;
   } | null>(null);
   const [connectModalOpen, setConnectModalOpen] = useState(false);
+
+  // Auth & Vouch state
+  const [currentUser, setCurrentUser] = useState<UserProfileSummary | null>(null);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authPrompt, setAuthPrompt] = useState('Sign in to vouch for this profile');
+  const [vouchModalOpen, setVouchModalOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [hasVouched, setHasVouched] = useState(false);
+  const [myVouch, setMyVouch] = useState<VouchItem | null>(null);
+  const [vouchesList, setVouchesList] = useState<VouchItem[]>(profile.vouches || []);
+  const [vouchCount, setVouchCount] = useState<number>(profile.vouchCount ?? (profile.vouches?.length ?? 0));
+
+  const checkVouchStatus = async (voucherId: number, voucheeId: number) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_vouches')
+        .select(`
+          id,
+          statement,
+          relationship_type,
+          optional_note,
+          created_at,
+          voucher:profiles!user_vouches_voucher_id_fkey (
+            id,
+            name,
+            handle,
+            avatar_url,
+            profession,
+            company
+          )
+        `)
+        .eq('voucher_id', voucherId)
+        .eq('vouchee_id', voucheeId)
+        .maybeSingle();
+
+      if (data && !error) {
+        setHasVouched(true);
+        setMyVouch({
+          ...data,
+          voucher: Array.isArray(data.voucher) ? data.voucher[0] : data.voucher,
+        });
+      } else {
+        setHasVouched(false);
+        setMyVouch(null);
+      }
+    } catch (err) {
+      console.error('Error checking vouch status:', err);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const checkUser = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user && isMounted) {
+          const myProfile = await ensureUserProfile(session.user);
+          if (isMounted) {
+            setCurrentUser(myProfile);
+            if (myProfile && profile.id) {
+              checkVouchStatus(myProfile.id, profile.id);
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Session check error:', err);
+      }
+    };
+
+    checkUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user && isMounted) {
+        const myProfile = await ensureUserProfile(session.user);
+        if (isMounted) {
+          setCurrentUser(myProfile);
+          if (myProfile && profile.id) {
+            checkVouchStatus(myProfile.id, profile.id);
+          }
+        }
+      } else if (isMounted) {
+        setCurrentUser(null);
+        setHasVouched(false);
+        setMyVouch(null);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, [profile.id]);
+
+  const handleVouchClick = () => {
+    if (!currentUser) {
+      setAuthPrompt(`Sign in or create an account to vouch for ${profile.name}`);
+      setAuthModalOpen(true);
+      return;
+    }
+
+    if (currentUser.id === profile.id) {
+      showToast('You cannot vouch for your own profile.');
+      return;
+    }
+
+    if (hasVouched) {
+      showToast(`You have already vouched for ${profile.name}!`);
+      return;
+    }
+
+    setVouchModalOpen(true);
+  };
+
+  const handleAuthSuccess = (newProfile: UserProfileSummary) => {
+    setCurrentUser(newProfile);
+    showToast(`Signed in as ${newProfile.name}`);
+    if (newProfile.id !== profile.id && !hasVouched) {
+      setTimeout(() => {
+        setVouchModalOpen(true);
+      }, 350);
+    }
+  };
+
+  const handleVouchSubmitted = (newVouch: any) => {
+    setVouchesList((prev) => [newVouch, ...prev]);
+    setVouchCount((prev) => prev + 1);
+    setHasVouched(true);
+    setMyVouch(newVouch);
+    showToast(`🎉 You have officially vouched for ${profile.name}!`);
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setCurrentUser(null);
+    setHasVouched(false);
+    setMyVouch(null);
+    setUserMenuOpen(false);
+    showToast('Signed out successfully');
+  };
+
+  const isOwnProfile = currentUser?.id === profile.id;
 
   const fa = profile.field_assignments;
 
@@ -270,7 +421,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
       {/* Main Container */}
       <main className="max-w-xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12">
         {/* Skeleton Header (Capsule header matching Flutter) */}
-        <header className="bg-[#171822]/90 border border-white/10 rounded-[30px] py-3 px-4 flex items-center justify-between shadow-lg backdrop-blur-md mb-8">
+        <header className="bg-[#171822]/90 border border-white/10 rounded-[30px] py-2.5 px-4 flex items-center justify-between shadow-lg backdrop-blur-md mb-8 relative">
           <Link
             href="/"
             aria-label="Back to Jana Home"
@@ -278,13 +429,61 @@ export default function ProfileView({ profile }: ProfileViewProps) {
           >
             <ArrowLeft className="w-3.5 h-3.5" />
           </Link>
-          <div className="text-center flex-1">
+          <div className="text-center flex-1 mx-2">
             <h1 className="text-base sm:text-lg font-bold text-white tracking-tight">Profile Space</h1>
-            <p className="text-[11px] sm:text-xs text-[#9CA3AF] font-normal">Digital Profile</p>
+            <p className="text-[10px] sm:text-xs text-[#9CA3AF] font-normal">Digital Profile</p>
           </div>
-          <div className="w-8 h-8 flex items-center justify-center">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/Jana.png" alt="Jana" className="w-5 h-5 object-contain opacity-70" />
+
+          <div className="flex items-center gap-2">
+            {currentUser ? (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center gap-1.5 py-1 px-2.5 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-white text-xs transition"
+                >
+                  <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-[#0064E0] to-[#00F2FE] flex items-center justify-center text-[10px] font-bold text-white">
+                    {currentUser.name?.charAt(0).toUpperCase() || '?'}
+                  </div>
+                  <span className="hidden sm:inline font-semibold max-w-[80px] truncate">{currentUser.name}</span>
+                  <ChevronDown className="w-3 h-3 text-white/50" />
+                </button>
+
+                {userMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-44 rounded-xl bg-[#1A1B28] border border-white/15 shadow-2xl p-1.5 z-50 text-xs animate-in fade-in">
+                    {currentUser.handle && (
+                      <Link
+                        href={`/x/${currentUser.handle}`}
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg text-white hover:bg-white/10 transition"
+                      >
+                        <UserIcon className="w-3.5 h-3.5 text-[#00F2FE]" />
+                        <span>My Profile</span>
+                      </Link>
+                    )}
+                    <button
+                      type="button"
+                      onClick={handleSignOut}
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-red-400 hover:bg-red-500/10 transition text-left"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setAuthPrompt('Sign in or create an account on Jana');
+                  setAuthModalOpen(true);
+                }}
+                className="py-1 px-3 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-white text-xs font-semibold transition active:scale-95"
+              >
+                Sign In
+              </button>
+            )}
           </div>
         </header>
 
@@ -315,26 +514,59 @@ export default function ProfileView({ profile }: ProfileViewProps) {
             {profile.company && (
               <p className="text-xs text-[#9CA3AF] truncate mt-0.5">{profile.company}</p>
             )}
-            <div className="flex items-center gap-2 mt-2">
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
               <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.08] border border-white/20 text-white/80 text-[10px] font-bold">
                 <Shield className="w-2.5 h-2.5 text-[#00F2FE]" />
-                <span>{vouches > 0 ? `${vouches} ${vouches === 1 ? 'Vouch' : 'Vouches'}` : 'Verified Circle'}</span>
+                <span>{vouchCount > 0 ? `${vouchCount} ${vouchCount === 1 ? 'Vouch' : 'Vouches'}` : 'Verified Circle'}</span>
               </div>
+
+              {/* Dynamic Vouch Action Button */}
+              {isOwnProfile ? (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/40 text-[10px] font-semibold">
+                  Your Profile
+                </span>
+              ) : hasVouched ? (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">
+                  <CheckCircle2 className="w-2.5 h-2.5" />
+                  <span>Vouched</span>
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleVouchClick}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gradient-to-r from-[#0064E0] to-[#00F2FE] hover:from-[#0051B8] hover:to-[#00D0DC] text-white text-[10px] font-bold shadow-sm shadow-[#0064E0]/30 active:scale-95 transition"
+                >
+                  <Plus className="w-3 h-3" />
+                  <span>Vouch</span>
+                </button>
+              )}
             </div>
           </div>
         </section>
 
         {/* VOUCHES SECTION */}
-        {profile.vouches && profile.vouches.length > 0 && (
-          <section className="mb-7">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-[11px] font-bold text-[#9CA3AF] tracking-[0.15em] uppercase flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5 text-[#00F2FE]" />
-                <span>VOUCHES ({profile.vouches.length})</span>
-              </h3>
-            </div>
+        <section className="mb-7">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-[11px] font-bold text-[#9CA3AF] tracking-[0.15em] uppercase flex items-center gap-1.5">
+              <Shield className="w-3.5 h-3.5 text-[#00F2FE]" />
+              <span>VOUCHES ({vouchCount})</span>
+            </h3>
+
+            {!isOwnProfile && !hasVouched && (
+              <button
+                type="button"
+                onClick={handleVouchClick}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#00F2FE]/10 border border-[#00F2FE]/30 hover:bg-[#00F2FE]/20 text-[#00F2FE] text-[10px] font-bold transition active:scale-95"
+              >
+                <Plus className="w-3 h-3" />
+                <span>+ Vouch</span>
+              </button>
+            )}
+          </div>
+
+          {vouchesList.length > 0 ? (
             <div className="space-y-3">
-              {profile.vouches.map((vouch) => {
+              {vouchesList.map((vouch) => {
                 const voucherName = vouch.voucher?.name || 'Jana Member';
                 const voucherAvatar = vouch.voucher?.avatar_url;
                 const voucherInitial = voucherName.charAt(0).toUpperCase();
@@ -401,8 +633,28 @@ export default function ProfileView({ profile }: ProfileViewProps) {
                 );
               })}
             </div>
-          </section>
-        )}
+          ) : (
+            <div className="bg-[#171822]/60 border border-white/10 rounded-2xl p-6 text-center">
+              <div className="w-10 h-10 rounded-full bg-[#00F2FE]/10 border border-[#00F2FE]/20 flex items-center justify-center mx-auto mb-2.5 text-[#00F2FE]">
+                <Shield className="w-5 h-5" />
+              </div>
+              <p className="text-xs font-semibold text-white">No vouches yet</p>
+              <p className="text-[11px] text-[#9CA3AF] mt-1 mb-4 max-w-xs mx-auto leading-relaxed">
+                Be the first to endorse {name.split(' ')[0]}&apos;s work, skills, and character on Jana.
+              </p>
+              {!isOwnProfile && (
+                <button
+                  type="button"
+                  onClick={handleVouchClick}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-[#0064E0] to-[#00F2FE] text-white text-xs font-bold transition shadow-md shadow-[#0064E0]/20 active:scale-95"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Vouch for {name.split(' ')[0]}</span>
+                </button>
+              )}
+            </div>
+          )}
+        </section>
 
         {/* MY STORY (Bio) */}
         {bio && (
@@ -674,9 +926,23 @@ export default function ProfileView({ profile }: ProfileViewProps) {
           >
             <span>Connect on Jana</span>
           </button>
+          {!isOwnProfile && (
+            <button
+              onClick={handleVouchClick}
+              className={`px-4 py-3.5 rounded-full border text-xs font-bold transition flex items-center gap-1.5 active:scale-95 ${
+                hasVouched
+                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                  : 'bg-white/5 border-white/15 hover:bg-white/10 text-white'
+              }`}
+              title={hasVouched ? 'You have vouched for this user' : 'Vouch for this user'}
+            >
+              <Shield className="w-3.5 h-3.5 text-[#00F2FE]" />
+              <span>{hasVouched ? 'Vouched' : 'Vouch'}</span>
+            </button>
+          )}
           <button
             onClick={() => copyToClipboard(currentUrl, 'Profile Link')}
-            className="w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 active:scale-95 transition flex items-center justify-center text-white"
+            className="w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 active:scale-95 transition flex items-center justify-center text-white flex-shrink-0"
             title="Share Profile"
           >
             <Copy className="w-4 h-4" />
@@ -787,6 +1053,31 @@ export default function ProfileView({ profile }: ProfileViewProps) {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Auth Modal (Sign In / Sign Up) */}
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        onSuccess={handleAuthSuccess}
+        actionPrompt={authPrompt}
+      />
+
+      {/* Vouch Modal */}
+      {currentUser && (
+        <VouchModal
+          isOpen={vouchModalOpen}
+          onClose={() => setVouchModalOpen(false)}
+          targetProfile={{
+            id: profile.id,
+            name: profile.name,
+            avatar_url: profile.avatar_url,
+            profession: profile.profession,
+            company: profile.company,
+          }}
+          currentUserProfile={currentUser}
+          onVouched={handleVouchSubmitted}
+        />
       )}
     </div>
   );
