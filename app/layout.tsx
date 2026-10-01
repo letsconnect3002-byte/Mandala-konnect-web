@@ -11,6 +11,14 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "Jana | Connect Your Inner Circle",
   description: "A private, distraction-free messaging app designed for your genuine professional and close circles. No algorithms, no strangers, no noise.",
+  icons: {
+    icon: [
+      { url: "/icon.png", type: "image/png" }
+    ],
+    apple: [
+      { url: "/icon.png", type: "image/png" }
+    ],
+  },
 };
 
 export default function RootLayout({
