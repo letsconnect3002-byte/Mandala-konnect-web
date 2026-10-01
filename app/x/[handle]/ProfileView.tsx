@@ -72,6 +72,7 @@ export interface ProfileData {
   skills?: string[] | null;
   vouchCount?: number;
   vouches?: VouchItem[] | null;
+  field_assignments?: Record<string, { c?: boolean; p?: boolean; pr?: boolean }> | null;
 }
 
 interface ProfileViewProps {
@@ -88,6 +89,53 @@ export default function ProfileView({ profile }: ProfileViewProps) {
     url: string;
   } | null>(null);
   const [connectModalOpen, setConnectModalOpen] = useState(false);
+
+  const fa = profile.field_assignments;
+
+  // Helper to check if a field is permitted to display.
+  // "pr" (private) === true means DO NOT DISPLAY.
+  const isFieldAllowed = (key: string): boolean => {
+    if (!fa || typeof fa !== 'object') return true;
+
+    let config = fa[key];
+
+    if (!config) {
+      const aliasMap: Record<string, string[]> = {
+        bio: ['bio'],
+        professional_bio: ['professionalBio', 'professional_bio'],
+        profession: ['profession'],
+        company: ['company'],
+        email: ['email'],
+        professional_email: ['professionalEmail', 'professional_email'],
+        phone_number: ['phoneNumber', 'phone_number'],
+        professional_phone_number: ['professionalPhoneNumber', 'professional_phone_number'],
+        avatar_url: ['avatarUrl', 'avatar_url'],
+        instagram: ['instagram'],
+        linkedin: ['linkedin'],
+        twitter: ['twitter'],
+        spotify: ['spotify'],
+        experience: ['experience'],
+        education: ['education'],
+        skills: ['skills'],
+      };
+
+      const aliases = aliasMap[key] || [];
+      for (const alias of aliases) {
+        if (fa[alias]) {
+          config = fa[alias];
+          break;
+        }
+      }
+    }
+
+    if (config && typeof config === 'object') {
+      if (config.pr === true || (config as unknown) === 'true') {
+        return false;
+      }
+    }
+
+    return true;
+  };
 
   const showToast = (message: string) => {
     setToastMessage(message);
@@ -109,7 +157,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
 
   // Helper to extract clean social handle and link
   const getSocialInfo = (platform: string, rawVal?: string | null) => {
-    if (!rawVal || !rawVal.trim()) return null;
+    if (!rawVal || !rawVal.trim() || !isFieldAllowed(platform)) return null;
     const clean = rawVal.trim();
     let url = clean;
     let handle = clean;
@@ -173,16 +221,35 @@ export default function ProfileView({ profile }: ProfileViewProps) {
   ].filter(Boolean) as Array<{ platform: string; name: string; handle: string; url: string }>;
 
   const name = profile.name || 'Jana User';
-  const bio = (profile.bio && profile.bio.trim()) || (profile.professional_bio && profile.professional_bio.trim()) || '';
-  const profession = profile.profession || '';
-  const email = profile.email || profile.professional_email || '';
-  const phoneNumber = profile.phone_number || profile.professional_phone_number || '';
-  const avatarUrl = profile.avatar_url;
+
+  // Respect private flags for bio, profession, company, email, phone, avatar
+  const casualBio = isFieldAllowed('bio') && profile.bio ? profile.bio.trim() : '';
+  const profBio = isFieldAllowed('professional_bio') && profile.professional_bio ? profile.professional_bio.trim() : '';
+  const bio = casualBio || profBio || '';
+
+  const profession = isFieldAllowed('profession') ? profile.profession || '' : '';
+  const company = isFieldAllowed('company') ? profile.company || '' : '';
+
+  const casualEmail = isFieldAllowed('email') ? profile.email : '';
+  const profEmail = isFieldAllowed('professional_email') ? profile.professional_email : '';
+  const email = casualEmail || profEmail || '';
+
+  const casualPhone = isFieldAllowed('phone_number') ? profile.phone_number : '';
+  const profPhone = isFieldAllowed('professional_phone_number') ? profile.professional_phone_number : '';
+  const phoneNumber = casualPhone || profPhone || '';
+
+  const avatarUrl = isFieldAllowed('avatar_url') ? profile.avatar_url : null;
   const initial = name.charAt(0).toUpperCase() || '?';
-  const customLinks = profile.custom_links || [];
-  const experience = profile.experience || [];
-  const education = profile.education || [];
-  const skills = profile.skills || [];
+
+  // Filter custom links: only include links where pr !== true
+  const customLinks = (profile.custom_links || []).filter((link) => {
+    const linkKey = link.id || link.name;
+    return isFieldAllowed(linkKey);
+  });
+
+  const experience = isFieldAllowed('experience') ? profile.experience || [] : [];
+  const education = isFieldAllowed('education') ? profile.education || [] : [];
+  const skills = isFieldAllowed('skills') ? profile.skills || [] : [];
   const vouches = profile.vouchCount ?? 0;
 
   const currentUrl = typeof window !== 'undefined' ? window.location.href : '';

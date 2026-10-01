@@ -99,11 +99,72 @@ async function getProfile(rawHandle: string): Promise<ProfileData | null> {
     vouches = await fetchVouches(matchedProfile.id);
   }
 
-  return {
+  // Server-side privacy filter: completely strip fields where "pr" (private) is true
+  const fa = matchedProfile.field_assignments;
+  const isAllowed = (key: string): boolean => {
+    if (!fa || typeof fa !== 'object') return true;
+    let config = fa[key];
+    if (!config) {
+      const aliasMap: Record<string, string[]> = {
+        bio: ['bio'],
+        professional_bio: ['professionalBio', 'professional_bio'],
+        profession: ['profession'],
+        company: ['company'],
+        email: ['email'],
+        professional_email: ['professionalEmail', 'professional_email'],
+        phone_number: ['phoneNumber', 'phone_number'],
+        professional_phone_number: ['professionalPhoneNumber', 'professional_phone_number'],
+        avatar_url: ['avatarUrl', 'avatar_url'],
+        instagram: ['instagram'],
+        linkedin: ['linkedin'],
+        twitter: ['twitter'],
+        spotify: ['spotify'],
+        experience: ['experience'],
+        education: ['education'],
+        skills: ['skills'],
+      };
+      const aliases = aliasMap[key] || [];
+      for (const alias of aliases) {
+        if (fa[alias]) {
+          config = fa[alias];
+          break;
+        }
+      }
+    }
+    if (config && typeof config === 'object') {
+      if (config.pr === true || (config as unknown) === 'true') {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const sanitizedProfile: ProfileData = {
     ...matchedProfile,
+    bio: isAllowed('bio') ? matchedProfile.bio : null,
+    professional_bio: isAllowed('professional_bio') ? matchedProfile.professional_bio : null,
+    email: isAllowed('email') ? matchedProfile.email : null,
+    professional_email: isAllowed('professional_email') ? matchedProfile.professional_email : null,
+    phone_number: isAllowed('phone_number') ? matchedProfile.phone_number : null,
+    professional_phone_number: isAllowed('professional_phone_number') ? matchedProfile.professional_phone_number : null,
+    profession: isAllowed('profession') ? matchedProfile.profession : null,
+    company: isAllowed('company') ? matchedProfile.company : null,
+    avatar_url: isAllowed('avatar_url') ? matchedProfile.avatar_url : null,
+    instagram: isAllowed('instagram') ? matchedProfile.instagram : null,
+    linkedin: isAllowed('linkedin') ? matchedProfile.linkedin : null,
+    twitter: isAllowed('twitter') ? matchedProfile.twitter : null,
+    spotify: isAllowed('spotify') ? matchedProfile.spotify : null,
+    custom_links: Array.isArray(matchedProfile.custom_links)
+      ? matchedProfile.custom_links.filter((l: any) => isAllowed(l.id || l.name))
+      : [],
+    experience: isAllowed('experience') ? matchedProfile.experience : [],
+    education: isAllowed('education') ? matchedProfile.education : [],
+    skills: isAllowed('skills') ? matchedProfile.skills : [],
     vouchCount: vouches.length,
     vouches,
   };
+
+  return sanitizedProfile;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -117,11 +178,27 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
+  const fa = profile.field_assignments;
+  const isAllowed = (key: string): boolean => {
+    if (!fa || typeof fa !== 'object') return true;
+    const config = fa[key] || fa[key.toLowerCase()];
+    if (config && typeof config === 'object') {
+      if (config.pr === true || (config as unknown) === 'true') {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const bio = (isAllowed('bio') && profile.bio) || (isAllowed('professional_bio') && profile.professional_bio) || '';
+  const profession = isAllowed('profession') ? profile.profession : '';
+  const company = isAllowed('company') ? profile.company : '';
+  const avatarUrl = isAllowed('avatar_url') ? profile.avatar_url : null;
+
   const title = `${profile.name} on Jana`;
   const description =
-    profile.bio ||
-    profile.professional_bio ||
-    (profile.profession ? `${profile.profession}${profile.company ? ` at ${profile.company}` : ''}` : 'View digital card and connect on Jana.');
+    bio ||
+    (profession ? `${profession}${company ? ` at ${company}` : ''}` : 'View digital card and connect on Jana.');
 
   return {
     title,
@@ -129,13 +206,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title,
       description,
-      images: profile.avatar_url ? [{ url: profile.avatar_url }] : [],
+      images: avatarUrl ? [{ url: avatarUrl }] : [],
     },
     twitter: {
       card: 'summary',
       title,
       description,
-      images: profile.avatar_url ? [profile.avatar_url] : [],
+      images: avatarUrl ? [avatarUrl] : [],
     },
   };
 }
