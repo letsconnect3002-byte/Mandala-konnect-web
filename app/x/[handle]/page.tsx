@@ -10,21 +10,54 @@ interface PageProps {
 
 async function getProfile(rawHandle: string): Promise<ProfileData | null> {
   const handle = decodeURIComponent(rawHandle).trim();
+  const nameWithSpaces = handle.replace(/[-_]+/g, ' ');
   const isNumeric = !isNaN(Number(handle));
 
-  // Build query matching handle, anon_name, or numeric id
-  let orQuery = `handle.ilike.${handle},anon_name.ilike.${handle}`;
+  // Build query matching handle, exact name, or name with spaces
+  const conditions = [
+    `handle.ilike.${handle}`,
+    `name.ilike.${handle}`,
+    `name.ilike.${nameWithSpaces}`
+  ];
+
   if (isNumeric) {
-    orQuery += `,id.eq.${handle}`;
+    conditions.push(`id.eq.${handle}`);
   }
 
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
-    .or(orQuery)
+    .or(conditions.join(','))
+    .limit(1)
     .maybeSingle();
 
   if (error || !data) {
+    // Secondary fallback: check if removing non-alphanumerics matches
+    const alphanumericInput = handle.toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (alphanumericInput.length >= 2) {
+      const { data: allProfiles } = await supabase
+        .from('profiles')
+        .select('*')
+        .limit(200);
+
+      const match = allProfiles?.find((p) => {
+        const pNameClean = (p.name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        const pHandleClean = (p.handle || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        return pNameClean === alphanumericInput || pHandleClean === alphanumericInput;
+      });
+
+      if (match) {
+        let vouchCount = 0;
+        if (match.id) {
+          const { count } = await supabase
+            .from('user_vouches')
+            .select('*', { count: 'exact', head: true })
+            .eq('vouchee_id', match.id);
+          vouchCount = count || 0;
+        }
+        return { ...match, vouchCount };
+      }
+    }
     return null;
   }
 
