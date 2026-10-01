@@ -8,6 +8,41 @@ interface PageProps {
   params: Promise<{ handle: string }>;
 }
 
+async function fetchVouches(profileId: number) {
+  try {
+    const { data: vouches, error } = await supabase
+      .from('user_vouches')
+      .select(`
+        id,
+        statement,
+        relationship_type,
+        optional_note,
+        created_at,
+        voucher:profiles!user_vouches_voucher_id_fkey (
+          id,
+          name,
+          handle,
+          avatar_url,
+          profession,
+          company
+        )
+      `)
+      .eq('vouchee_id', profileId)
+      .order('created_at', { ascending: false });
+
+    if (error || !vouches) {
+      return [];
+    }
+
+    return vouches.map((v: any) => ({
+      ...v,
+      voucher: Array.isArray(v.voucher) ? v.voucher[0] : v.voucher,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 async function getProfile(rawHandle: string): Promise<ProfileData | null> {
   const handle = decodeURIComponent(rawHandle).trim();
   const nameWithSpaces = handle.replace(/[-_]+/g, ' ');
@@ -31,7 +66,9 @@ async function getProfile(rawHandle: string): Promise<ProfileData | null> {
     .limit(1)
     .maybeSingle();
 
-  if (error || !data) {
+  let matchedProfile = data;
+
+  if (error || !matchedProfile) {
     // Secondary fallback: check if removing non-alphanumerics matches
     const alphanumericInput = handle.toLowerCase().replace(/[^a-z0-9]/g, '');
     if (alphanumericInput.length >= 2) {
@@ -47,33 +84,25 @@ async function getProfile(rawHandle: string): Promise<ProfileData | null> {
       });
 
       if (match) {
-        let vouchCount = 0;
-        if (match.id) {
-          const { count } = await supabase
-            .from('user_vouches')
-            .select('*', { count: 'exact', head: true })
-            .eq('vouchee_id', match.id);
-          vouchCount = count || 0;
-        }
-        return { ...match, vouchCount };
+        matchedProfile = match;
       }
     }
+  }
+
+  if (!matchedProfile) {
     return null;
   }
 
-  // Count vouches for this profile
-  let vouchCount = 0;
-  if (data.id) {
-    const { count } = await supabase
-      .from('user_vouches')
-      .select('*', { count: 'exact', head: true })
-      .eq('vouchee_id', data.id);
-    vouchCount = count || 0;
+  // Fetch full vouches for this profile
+  let vouches: any[] = [];
+  if (matchedProfile.id) {
+    vouches = await fetchVouches(matchedProfile.id);
   }
 
   return {
-    ...data,
-    vouchCount,
+    ...matchedProfile,
+    vouchCount: vouches.length,
+    vouches,
   };
 }
 

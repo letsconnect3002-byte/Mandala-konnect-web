@@ -18,6 +18,22 @@ import {
   QrCode
 } from 'lucide-react';
 
+export interface VouchItem {
+  id: string;
+  statement?: string | null;
+  relationship_type?: string | null;
+  optional_note?: string | null;
+  created_at?: string | null;
+  voucher?: {
+    id: number;
+    name: string;
+    handle?: string | null;
+    avatar_url?: string | null;
+    profession?: string | null;
+    company?: string | null;
+  } | null;
+}
+
 export interface ProfileData {
   id: number;
   name: string;
@@ -55,6 +71,7 @@ export interface ProfileData {
   }> | null;
   skills?: string[] | null;
   vouchCount?: number;
+  vouches?: VouchItem[] | null;
 }
 
 interface ProfileViewProps {
@@ -234,17 +251,91 @@ export default function ProfileView({ profile }: ProfileViewProps) {
             <div className="flex items-center gap-2 mt-2">
               <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.08] border border-white/20 text-white/80 text-[10px] font-bold">
                 <Shield className="w-2.5 h-2.5 text-[#00F2FE]" />
-                <span>{vouches > 0 ? `${vouches} Vouches` : 'Verified Circle'}</span>
+                <span>{vouches > 0 ? `${vouches} ${vouches === 1 ? 'Vouch' : 'Vouches'}` : 'Verified Circle'}</span>
               </div>
-              {profile.vibe_tag && (
-                <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-white/60 text-[10px]">
-                  <Sparkles className="w-2.5 h-2.5 text-[#EC4899]" />
-                  <span>{profile.vibe_tag}</span>
-                </div>
-              )}
             </div>
           </div>
         </section>
+
+        {/* VOUCHES SECTION */}
+        {profile.vouches && profile.vouches.length > 0 && (
+          <section className="mb-7">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-[11px] font-bold text-[#9CA3AF] tracking-[0.15em] uppercase flex items-center gap-1.5">
+                <Shield className="w-3.5 h-3.5 text-[#00F2FE]" />
+                <span>VOUCHES ({profile.vouches.length})</span>
+              </h3>
+            </div>
+            <div className="space-y-3">
+              {profile.vouches.map((vouch) => {
+                const voucherName = vouch.voucher?.name || 'Jana Member';
+                const voucherAvatar = vouch.voucher?.avatar_url;
+                const voucherInitial = voucherName.charAt(0).toUpperCase();
+                const voucherHandle = vouch.voucher?.handle;
+
+                return (
+                  <div
+                    key={vouch.id}
+                    className="bg-[#171822]/80 border border-white/10 rounded-xl p-4 relative overflow-hidden"
+                  >
+                    <div className="flex items-start justify-between gap-3 mb-2.5">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-full overflow-hidden bg-[#1E1F32] flex items-center justify-center flex-shrink-0 border border-white/10">
+                          {voucherAvatar ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={voucherAvatar}
+                              alt={voucherName}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <span className="text-xs font-bold text-white">{voucherInitial}</span>
+                          )}
+                        </div>
+                        <div>
+                          {voucherHandle ? (
+                            <Link
+                              href={`/x/${voucherHandle}`}
+                              className="text-xs font-bold text-white hover:text-[#00F2FE] transition block"
+                            >
+                              {voucherName}
+                            </Link>
+                          ) : (
+                            <div className="text-xs font-bold text-white">{voucherName}</div>
+                          )}
+                          {(vouch.voucher?.profession || vouch.voucher?.company) && (
+                            <div className="text-[10px] text-[#9CA3AF]">
+                              {vouch.voucher?.profession}
+                              {vouch.voucher?.company ? ` at ${vouch.voucher?.company}` : ''}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {vouch.relationship_type && (
+                        <span className="px-2 py-0.5 rounded-full bg-[#00F2FE]/10 border border-[#00F2FE]/30 text-[#00F2FE] text-[9px] font-bold uppercase tracking-wider">
+                          {vouch.relationship_type}
+                        </span>
+                      )}
+                    </div>
+
+                    {vouch.statement && (
+                      <p className="text-xs text-white/80 leading-relaxed italic border-l-2 border-[#00F2FE]/40 pl-2.5 my-2">
+                        &ldquo;{vouch.statement}&rdquo;
+                      </p>
+                    )}
+
+                    {vouch.optional_note && (
+                      <p className="text-[11px] text-white/60 leading-relaxed mt-1.5 pl-2.5">
+                        {vouch.optional_note}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         {/* MY STORY (Bio) */}
         {bio && (
