@@ -16,11 +16,37 @@ export interface UserProfileSummary {
   avatar_url?: string | null;
 }
 
+export function generateRandom4Digits(): string {
+  return Math.floor(1000 + Math.random() * 9000).toString();
+}
+
 export function generateHandleSlug(input: string): string {
   let s = input.toLowerCase().trim();
-  s = s.replace(/[^a-z0-9]+/g, '-');
-  s = s.replace(/^-+|-+$/g, '');
-  return s || 'user';
+  s = s.replace(/[^a-z0-9]/g, '');
+  if (!s) s = 'user';
+  return `${s}${generateRandom4Digits()}`;
+}
+
+export async function generateUniqueHandle(input: string): Promise<string> {
+  let s = input.toLowerCase().trim();
+  s = s.replace(/[^a-z0-9]/g, '');
+  if (!s) s = 'user';
+
+  // Try generating a unique 4-digit suffixed handle
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const candidate = `${s}${generateRandom4Digits()}`;
+    const { data: existing } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('handle', candidate)
+      .maybeSingle();
+
+    if (!existing) {
+      return candidate;
+    }
+  }
+
+  return `${s}${generateRandom4Digits()}`;
 }
 
 // In-flight promise cache to prevent concurrent race conditions on profile creation
@@ -63,7 +89,8 @@ export async function ensureUserProfile(
         meta.picture?.toString()?.trim() ||
         '';
       const profession = extra?.profession?.trim() || 'Member';
-      const handle = generateHandleSlug(name !== 'User' ? name : (email.split('@')[0] || 'user'));
+      const baseName = name !== 'User' ? name : (email.split('@')[0] || 'user');
+      const handle = await generateUniqueHandle(baseName);
 
       const defaultFieldAssignments = {
         name: { c: true, p: true, pr: false },
