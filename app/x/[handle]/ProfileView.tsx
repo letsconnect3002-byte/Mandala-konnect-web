@@ -666,22 +666,10 @@ export default function ProfileView({ profile }: ProfileViewProps) {
                         </Link>
                       )
                     )}
-                    <div className="h-px bg-white/10 my-1" />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setUserMenuOpen(false);
-                        setDeleteModalOpen(true);
-                      }}
-                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-red-400 hover:bg-red-500/10 transition text-left"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>Delete Account</span>
-                    </button>
                     <button
                       type="button"
                       onClick={handleSignOut}
-                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-white/70 hover:bg-white/10 hover:text-white transition text-left"
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-red-400 hover:bg-red-500/10 transition text-left"
                     >
                       <LogOut className="w-3.5 h-3.5" />
                       <span>Sign Out</span>
@@ -734,14 +722,25 @@ export default function ProfileView({ profile }: ProfileViewProps) {
             
             <div className="flex items-center gap-2 mt-2">
               {isOwnProfile ? (
-                <button
-                  type="button"
-                  onClick={() => setEditModalOpen(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-white/15 border border-white/25 text-white text-[11px] font-bold active:scale-95 transition"
-                >
-                  <Pencil className="w-3 h-3 text-[#00F2FE]" />
-                  <span>Edit Profile</span>
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditModalOpen(true)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-white/15 border border-white/25 text-white text-[11px] font-bold active:scale-95 transition"
+                  >
+                    <Pencil className="w-3 h-3 text-[#00F2FE]" />
+                    <span>Edit Profile</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDeleteModalOpen(true)}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-red-500/25 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-[10px] font-bold active:scale-95 transition"
+                    title="Delete Account"
+                  >
+                    <Trash2 className="w-3 h-3 text-red-400" />
+                    <span>Delete</span>
+                  </button>
+                </div>
               ) : hasVouched ? (
                 <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/[0.08] border border-white/20 text-white/80 text-[10px] font-bold">
                   <ShieldCheck className="w-3 h-3 text-white/80" />
@@ -1322,6 +1321,23 @@ export default function ProfileView({ profile }: ProfileViewProps) {
                 ))}
               </div>
             )}
+          </section>
+        )}
+
+        {/* Account Management (Only on Logged-in User Profile) */}
+        {isOwnProfile && (
+          <section className="mt-8 pt-6 pb-6 border-t border-white/[0.08] text-center">
+            <button
+              type="button"
+              onClick={() => setDeleteModalOpen(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-red-500/25 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 text-xs font-semibold transition active:scale-95 cursor-pointer shadow-sm"
+            >
+              <Trash2 className="w-3.5 h-3.5 text-red-400" />
+              <span>Delete Account</span>
+            </button>
+            <p className="text-[11px] text-white/40 mt-2">
+              Permanently delete your profile, handle, vouches, and account data
+            </p>
           </section>
         )}
       </div>
