@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
-  ArrowLeft,
+  ChevronLeft,
   Copy,
   Check,
   ExternalLink,
@@ -14,14 +14,12 @@ import {
   Link as LinkIcon,
   X as CloseIcon,
   GraduationCap,
-  Sparkles,
-  QrCode,
   Plus,
-  CheckCircle2,
   ChevronDown,
   User as UserIcon,
   LogOut,
   ShieldCheck,
+  UserPlus,
 } from 'lucide-react';
 import { supabase, ensureUserProfile, UserProfileSummary } from '@/lib/supabase';
 import AuthModal from '@/components/AuthModal';
@@ -106,7 +104,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
   const [vouchModalOpen, setVouchModalOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [hasVouched, setHasVouched] = useState(false);
-  const [myVouch, setMyVouch] = useState<VouchItem | null>(null);
+  const [, setMyVouch] = useState<VouchItem | null>(null);
   const [vouchesList, setVouchesList] = useState<VouchItem[]>(profile.vouches || []);
   const [vouchCount, setVouchCount] = useState<number>(profile.vouchCount ?? (profile.vouches?.length ?? 0));
 
@@ -221,7 +219,6 @@ export default function ProfileView({ profile }: ProfileViewProps) {
   };
 
   const isOwnProfile = currentUser?.id === profile.id;
-
   const fa = profile.field_assignments;
 
   // Helper to check if a field is permitted to display.
@@ -382,40 +379,40 @@ export default function ProfileView({ profile }: ProfileViewProps) {
   const experience = isFieldAllowed('experience') ? profile.experience || [] : [];
   const education = isFieldAllowed('education') ? profile.education || [] : [];
   const skills = isFieldAllowed('skills') ? profile.skills || [] : [];
-  const vouches = profile.vouchCount ?? 0;
 
   const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(currentUrl)}&color=000000`;
 
   return (
-    <div className="min-h-screen bg-[#0E0F14] text-white font-sans relative selection:bg-[#00F2FE]/20 pb-28">
+    <div className="min-h-screen bg-[#000000] text-white font-sans antialiased selection:bg-[#00F2FE]/20">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] transition-all duration-300 animate-in fade-in slide-in-from-top-4">
-          <div className="bg-[#1C1D26]/95 border border-white/10 text-white px-5 py-3 rounded-xl shadow-2xl backdrop-blur-md flex items-center gap-2.5 text-xs sm:text-sm font-medium">
+        <div className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] transition-all duration-300 animate-in fade-in slide-in-from-top-4">
+          <div className="bg-[#17181D]/95 border border-white/10 text-white px-4 py-2.5 rounded-full shadow-2xl backdrop-blur-md flex items-center gap-2 text-xs font-medium">
             <span className="w-2 h-2 rounded-full bg-[#00F2FE] animate-pulse" />
             <span>{toastMessage}</span>
           </div>
         </div>
       )}
 
-      {/* Main Container */}
-      <main className="max-w-xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12">
-        {/* Skeleton Header (Capsule header matching Flutter) */}
-        <header className="bg-[#171822]/90 border border-white/10 rounded-[30px] py-2.5 px-4 flex items-center justify-between shadow-lg backdrop-blur-md mb-8 relative">
+      {/* Centered Mobile Screen Container */}
+      <div className="max-w-[430px] w-full mx-auto min-h-screen px-4 pt-5 pb-28 sm:border-x sm:border-white/[0.06] bg-[#000000] relative">
+        {/* Header Capsule matching _buildSkeletonHeader() */}
+        <header className="bg-[#0F1013] border border-white/10 rounded-[30px] py-2 px-3.5 flex items-center justify-between shadow-lg mb-6">
           <Link
             href="/"
-            aria-label="Back to Jana Home"
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 transition flex items-center justify-center text-white"
+            aria-label="Back to Home"
+            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/15 active:scale-95 transition flex items-center justify-center text-white flex-shrink-0"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
+            <ChevronLeft className="w-4 h-4 ml-[-1px]" />
           </Link>
-          <div className="text-center flex-1 mx-2">
-            <h1 className="text-base sm:text-lg font-bold text-white tracking-tight">Profile Space</h1>
-            <p className="text-[10px] sm:text-xs text-[#9CA3AF] font-normal">Digital Profile</p>
+          
+          <div className="text-center flex-1 mx-2 min-w-0">
+            <h1 className="text-[17px] font-bold text-white tracking-tight leading-snug truncate">Profile Space</h1>
+            <p className="text-[11px] text-[#A1A4B0] font-normal leading-snug">Digital Profile</p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 flex-shrink-0">
             {currentUser ? (
               <div className="relative">
                 <button
@@ -426,12 +423,11 @@ export default function ProfileView({ profile }: ProfileViewProps) {
                   <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-[#0064E0] to-[#00F2FE] flex items-center justify-center text-[10px] font-bold text-white">
                     {currentUser.name?.charAt(0).toUpperCase() || '?'}
                   </div>
-                  <span className="hidden sm:inline font-semibold max-w-[80px] truncate">{currentUser.name}</span>
                   <ChevronDown className="w-3 h-3 text-white/50" />
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-44 rounded-xl bg-[#1A1B28] border border-white/15 shadow-2xl p-1.5 z-50 text-xs animate-in fade-in">
+                  <div className="absolute right-0 mt-2 w-44 rounded-xl bg-[#17181D] border border-white/15 shadow-2xl p-1.5 z-50 text-xs animate-in fade-in">
                     {currentUser.handle && (
                       <Link
                         href={`/x/${currentUser.handle}`}
@@ -468,10 +464,10 @@ export default function ProfileView({ profile }: ProfileViewProps) {
           </div>
         </header>
 
-        {/* Identity Section (Photo, Name, Vouch) */}
-        <section className="flex items-center gap-4 mb-8">
+        {/* Identity Section (Avatar, Name, Vouch pill) */}
+        <section className="flex items-center gap-4 mb-6">
           {/* Avatar with Pink-Cyan Gradient Border */}
-          <div className="w-[74px] h-[74px] rounded-full p-[3px] bg-gradient-to-br from-[#EC4899] to-[#00F2FE] flex-shrink-0 shadow-md">
+          <div className="w-[72px] h-[72px] rounded-full p-[3px] bg-gradient-to-br from-[#EC4899] to-[#00F2FE] flex-shrink-0 shadow-md">
             <div className="w-full h-full rounded-full overflow-hidden bg-[#1E1F32] flex items-center justify-center">
               {avatarUrl && avatarUrl.startsWith('http') ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -489,35 +485,30 @@ export default function ProfileView({ profile }: ProfileViewProps) {
             </div>
           </div>
 
-          {/* Name & Vibe / Vouch */}
+          {/* Name & Vouch */}
           <div className="flex-1 min-w-0">
-            <h2 className="text-lg sm:text-xl font-black text-white tracking-wide truncate">{name}</h2>
-            {profile.company && (
-              <p className="text-xs text-[#9CA3AF] truncate mt-0.5">{profile.company}</p>
+            <h2 className="text-[18px] font-black text-white tracking-[0.5px] truncate leading-snug">{name}</h2>
+            {company && (
+              <p className="text-xs text-[#A1A4B0] truncate mt-0.5">{company}</p>
             )}
-            <div className="flex items-center gap-2 mt-2 flex-wrap">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.08] border border-white/20 text-white/80 text-[10px] font-bold">
-                <Shield className="w-2.5 h-2.5 text-[#00F2FE]" />
-                <span>{vouchCount > 0 ? `${vouchCount} ${vouchCount === 1 ? 'Vouch' : 'Vouches'}` : 'Verified Circle'}</span>
-              </div>
-
-              {/* Dynamic Vouch Action Button */}
+            
+            <div className="flex items-center gap-2 mt-2">
               {isOwnProfile ? (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/40 text-[10px] font-semibold">
+                <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/50 text-[10px] font-bold">
                   Your Profile
                 </span>
               ) : hasVouched ? (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">
-                  <CheckCircle2 className="w-2.5 h-2.5" />
+                <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/[0.08] border border-white/20 text-white/80 text-[10px] font-bold">
+                  <ShieldCheck className="w-3 h-3 text-white/80" />
                   <span>Vouched</span>
-                </span>
+                </div>
               ) : (
                 <button
                   type="button"
                   onClick={handleVouchClick}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gradient-to-r from-[#0064E0] to-[#00F2FE] hover:from-[#0051B8] hover:to-[#00D0DC] text-white text-[10px] font-bold shadow-sm shadow-[#0064E0]/30 active:scale-95 transition"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/15 border border-white/25 text-white text-[10px] font-bold active:scale-95 transition"
                 >
-                  <Plus className="w-3 h-3" />
+                  <Shield className="w-3 h-3 text-white" />
                   <span>Vouch</span>
                 </button>
               )}
@@ -526,41 +517,40 @@ export default function ProfileView({ profile }: ProfileViewProps) {
         </section>
 
         {/* VOUCHES SECTION */}
-        <section className="mb-7">
+        <section className="mb-6">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-[11px] font-bold text-[#9CA3AF] tracking-[0.15em] uppercase flex items-center gap-1.5">
-              <Shield className="w-3.5 h-3.5 text-[#00F2FE]" />
-              <span>VOUCHES ({vouchCount})</span>
+            <h3 className="text-[11px] font-bold text-[#A1A4B0] tracking-[1.5px] uppercase">
+              VOUCHES ({vouchCount})
             </h3>
 
             {!isOwnProfile && !hasVouched && (
               <button
                 type="button"
                 onClick={handleVouchClick}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#00F2FE]/10 border border-[#00F2FE]/30 hover:bg-[#00F2FE]/20 text-[#00F2FE] text-[10px] font-bold transition active:scale-95"
+                className="text-[10px] font-bold text-[#00F2FE] hover:underline flex items-center gap-1 active:scale-95 transition"
               >
-                <Plus className="w-3 h-3" />
                 <span>+ Vouch</span>
               </button>
             )}
           </div>
 
           {vouchesList.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {vouchesList.map((vouch) => {
                 const voucherName = vouch.voucher?.name || 'Jana Member';
                 const voucherAvatar = vouch.voucher?.avatar_url;
                 const voucherInitial = voucherName.charAt(0).toUpperCase();
                 const voucherHandle = vouch.voucher?.handle;
+                const voucherRole = vouch.voucher?.profession || vouch.voucher?.company;
 
                 return (
                   <div
                     key={vouch.id}
-                    className="bg-[#171822]/80 border border-white/10 rounded-xl p-4 relative overflow-hidden"
+                    className="bg-[#0F1013] border border-white/[0.08] rounded-[16px] p-3.5 space-y-2 transition"
                   >
-                    <div className="flex items-start justify-between gap-3 mb-2.5">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full overflow-hidden bg-[#1E1F32] flex items-center justify-center flex-shrink-0 border border-white/10">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-7 h-7 rounded-full overflow-hidden bg-[#1E1F32] flex items-center justify-center flex-shrink-0 border border-white/10">
                           {voucherAvatar ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
@@ -569,44 +559,43 @@ export default function ProfileView({ profile }: ProfileViewProps) {
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <span className="text-xs font-bold text-white">{voucherInitial}</span>
+                            <span className="text-[11px] font-bold text-white">{voucherInitial}</span>
                           )}
                         </div>
-                        <div>
+                        <div className="min-w-0">
                           {voucherHandle ? (
                             <Link
                               href={`/x/${voucherHandle}`}
-                              className="text-xs font-bold text-white hover:text-[#00F2FE] transition block"
+                              className="text-xs font-bold text-white hover:text-[#00F2FE] transition block truncate"
                             >
                               {voucherName}
                             </Link>
                           ) : (
-                            <div className="text-xs font-bold text-white">{voucherName}</div>
+                            <div className="text-xs font-bold text-white truncate">{voucherName}</div>
                           )}
-                          {(vouch.voucher?.profession || vouch.voucher?.company) && (
-                            <div className="text-[10px] text-[#9CA3AF]">
-                              {vouch.voucher?.profession}
-                              {vouch.voucher?.company ? ` at ${vouch.voucher?.company}` : ''}
+                          {voucherRole && (
+                            <div className="text-[10px] text-[#A1A4B0] truncate">
+                              {voucherRole}
                             </div>
                           )}
                         </div>
                       </div>
 
                       {vouch.relationship_type && (
-                        <span className="px-2 py-0.5 rounded-full bg-[#00F2FE]/10 border border-[#00F2FE]/30 text-[#00F2FE] text-[9px] font-bold uppercase tracking-wider">
+                        <span className="px-2 py-0.5 rounded-full bg-[#00F2FE]/10 border border-[#00F2FE]/30 text-[#00F2FE] text-[9px] font-bold uppercase tracking-wider flex-shrink-0">
                           {vouch.relationship_type}
                         </span>
                       )}
                     </div>
 
                     {vouch.statement && (
-                      <p className="text-xs text-white/80 leading-relaxed italic border-l-2 border-[#00F2FE]/40 pl-2.5 my-2">
+                      <p className="text-xs text-white/90 leading-relaxed italic border-l-2 border-[#00F2FE] pl-2.5 my-1.5 font-medium">
                         &ldquo;{vouch.statement}&rdquo;
                       </p>
                     )}
 
                     {vouch.optional_note && (
-                      <p className="text-[11px] text-white/60 leading-relaxed mt-1.5 pl-2.5">
+                      <p className="text-[11px] text-white/60 leading-relaxed pl-2.5">
                         {vouch.optional_note}
                       </p>
                     )}
@@ -615,19 +604,19 @@ export default function ProfileView({ profile }: ProfileViewProps) {
               })}
             </div>
           ) : (
-            <div className="bg-[#171822]/60 border border-white/10 rounded-2xl p-6 text-center">
-              <div className="w-10 h-10 rounded-full bg-[#00F2FE]/10 border border-[#00F2FE]/20 flex items-center justify-center mx-auto mb-2.5 text-[#00F2FE]">
-                <Shield className="w-5 h-5" />
+            <div className="bg-[#0F1013] border border-white/[0.08] rounded-[18px] p-6 text-center">
+              <div className="w-9 h-9 rounded-full bg-[#00F2FE]/10 border border-[#00F2FE]/20 flex items-center justify-center mx-auto mb-2 text-[#00F2FE]">
+                <Shield className="w-4 h-4" />
               </div>
               <p className="text-xs font-semibold text-white">No vouches yet</p>
-              <p className="text-[11px] text-[#9CA3AF] mt-1 mb-4 max-w-xs mx-auto leading-relaxed">
+              <p className="text-[11px] text-[#A1A4B0] mt-1 mb-4 leading-relaxed">
                 Be the first to endorse {name.split(' ')[0]}&apos;s work, skills, and character on Jana.
               </p>
               {!isOwnProfile && (
                 <button
                   type="button"
                   onClick={handleVouchClick}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-[#0064E0] to-[#00F2FE] text-white text-xs font-bold transition shadow-md shadow-[#0064E0]/20 active:scale-95"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-black text-xs font-bold transition shadow-sm active:scale-95"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Vouch for {name.split(' ')[0]}</span>
@@ -639,12 +628,12 @@ export default function ProfileView({ profile }: ProfileViewProps) {
 
         {/* MY STORY (Bio) */}
         {bio && (
-          <section className="mb-7">
-            <h3 className="text-[11px] font-bold text-[#9CA3AF] tracking-[0.15em] uppercase mb-2.5">
+          <section className="mb-6">
+            <h3 className="text-[11px] font-bold text-[#A1A4B0] tracking-[1.5px] uppercase mb-2">
               MY STORY
             </h3>
-            <div className="p-1">
-              <p className="text-white/70 text-sm leading-relaxed whitespace-pre-line font-light">
+            <div className="px-0.5 py-1">
+              <p className="text-white/70 text-sm leading-[1.6] whitespace-pre-line font-normal">
                 {bio}
               </p>
             </div>
@@ -653,75 +642,75 @@ export default function ProfileView({ profile }: ProfileViewProps) {
 
         {/* CONNECTION DETAILS */}
         {(profession || email || phoneNumber) && (
-          <section className="mb-7">
-            <h3 className="text-[11px] font-bold text-[#9CA3AF] tracking-[0.15em] uppercase mb-3">
+          <section className="mb-6">
+            <h3 className="text-[11px] font-bold text-[#A1A4B0] tracking-[1.5px] uppercase mb-1">
               CONNECTION DETAILS
             </h3>
-            <div className="space-y-1">
+            <div>
               {profession && (
-                <div className="flex items-center justify-between py-2 border-b border-white/[0.04] last:border-none">
+                <div className="py-2.5 flex items-center justify-between border-b border-white/[0.04] last:border-none">
                   <div className="flex items-center gap-3 min-w-0">
                     <Briefcase className="w-4 h-4 text-[#00F2FE] flex-shrink-0" />
                     <div className="min-w-0">
-                      <div className="text-[11px] font-bold text-[#9CA3AF]">Profession</div>
-                      <div className="text-sm font-semibold text-white truncate">{profession}</div>
+                      <div className="text-[11px] font-bold text-[#A1A4B0]">Profession</div>
+                      <div className="text-sm font-semibold text-white truncate mt-0.5">{profession}</div>
                     </div>
                   </div>
                   <button
                     onClick={() => copyToClipboard(profession, 'Profession')}
-                    className="p-1.5 text-white/40 hover:text-white transition"
+                    className="p-1.5 text-[#5E626E] hover:text-white transition"
                     title="Copy Profession"
                   >
                     {copiedField === 'Profession' ? (
-                      <Check className="w-4 h-4 text-green-400" />
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
                     ) : (
-                      <Copy className="w-4 h-4" />
+                      <Copy className="w-3.5 h-3.5" />
                     )}
                   </button>
                 </div>
               )}
 
               {email && (
-                <div className="flex items-center justify-between py-2 border-b border-white/[0.04] last:border-none">
+                <div className="py-2.5 flex items-center justify-between border-b border-white/[0.04] last:border-none">
                   <div className="flex items-center gap-3 min-w-0">
                     <Mail className="w-4 h-4 text-[#00F2FE] flex-shrink-0" />
                     <div className="min-w-0">
-                      <div className="text-[11px] font-bold text-[#9CA3AF]">Email Address</div>
-                      <div className="text-sm font-semibold text-white truncate">{email}</div>
+                      <div className="text-[11px] font-bold text-[#A1A4B0]">Email Address</div>
+                      <div className="text-sm font-semibold text-white truncate mt-0.5">{email}</div>
                     </div>
                   </div>
                   <button
                     onClick={() => copyToClipboard(email, 'Email')}
-                    className="p-1.5 text-white/40 hover:text-white transition"
+                    className="p-1.5 text-[#5E626E] hover:text-white transition"
                     title="Copy Email"
                   >
                     {copiedField === 'Email' ? (
-                      <Check className="w-4 h-4 text-green-400" />
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
                     ) : (
-                      <Copy className="w-4 h-4" />
+                      <Copy className="w-3.5 h-3.5" />
                     )}
                   </button>
                 </div>
               )}
 
               {phoneNumber && (
-                <div className="flex items-center justify-between py-2 border-b border-white/[0.04] last:border-none">
+                <div className="py-2.5 flex items-center justify-between border-b border-white/[0.04] last:border-none">
                   <div className="flex items-center gap-3 min-w-0">
                     <Smartphone className="w-4 h-4 text-[#00F2FE] flex-shrink-0" />
                     <div className="min-w-0">
-                      <div className="text-[11px] font-bold text-[#9CA3AF]">Phone Number</div>
-                      <div className="text-sm font-semibold text-white truncate">{phoneNumber}</div>
+                      <div className="text-[11px] font-bold text-[#A1A4B0]">Phone Number</div>
+                      <div className="text-sm font-semibold text-white truncate mt-0.5">{phoneNumber}</div>
                     </div>
                   </div>
                   <button
                     onClick={() => copyToClipboard(phoneNumber, 'Phone Number')}
-                    className="p-1.5 text-white/40 hover:text-white transition"
+                    className="p-1.5 text-[#5E626E] hover:text-white transition"
                     title="Copy Phone Number"
                   >
                     {copiedField === 'Phone Number' ? (
-                      <Check className="w-4 h-4 text-green-400" />
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
                     ) : (
-                      <Copy className="w-4 h-4" />
+                      <Copy className="w-3.5 h-3.5" />
                     )}
                   </button>
                 </div>
@@ -732,8 +721,8 @@ export default function ProfileView({ profile }: ProfileViewProps) {
 
         {/* SOCIAL PROFILES */}
         {socials.length > 0 && (
-          <section className="mb-7">
-            <h3 className="text-[11px] font-bold text-[#9CA3AF] tracking-[0.15em] uppercase mb-3">
+          <section className="mb-6">
+            <h3 className="text-[11px] font-bold text-[#A1A4B0] tracking-[1.5px] uppercase mb-2.5">
               SOCIAL PROFILES
             </h3>
             <div className="grid grid-cols-2 gap-2.5">
@@ -748,7 +737,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
                       url: social.url,
                     })
                   }
-                  className="bg-[#171822]/80 hover:bg-[#1E1F2C] border border-white/10 hover:border-[#00F2FE]/40 transition-all duration-200 rounded-xl p-3 flex items-center gap-3 text-left group"
+                  className="bg-transparent hover:bg-white/[0.03] p-1.5 rounded-xl transition flex items-center gap-2.5 text-left group"
                 >
                   <div className="w-8 h-8 rounded-full bg-[#00F2FE]/10 flex items-center justify-center text-[#00F2FE] flex-shrink-0">
                     {social.platform === 'twitter' && <span className="font-bold text-xs">𝕏</span>}
@@ -768,25 +757,25 @@ export default function ProfileView({ profile }: ProfileViewProps) {
 
         {/* CUSTOM LINKS */}
         {customLinks.length > 0 && (
-          <section className="mb-7">
-            <h3 className="text-[11px] font-bold text-[#9CA3AF] tracking-[0.15em] uppercase mb-3">
+          <section className="mb-6">
+            <h3 className="text-[11px] font-bold text-[#A1A4B0] tracking-[1.5px] uppercase mb-1">
               CUSTOM LINKS
             </h3>
-            <div className="space-y-2">
+            <div>
               {customLinks.map((link, idx) => (
                 <div
                   key={link.id || idx}
-                  className="bg-[#171822]/60 border border-white/10 rounded-xl p-3 flex items-center justify-between gap-3"
+                  className="py-2.5 flex items-center justify-between border-b border-white/[0.04] last:border-none"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <LinkIcon className="w-4 h-4 text-[#00F2FE] flex-shrink-0" />
                     <div className="min-w-0">
-                      <div className="text-xs font-bold text-white truncate">{link.name}</div>
+                      <div className="text-[11px] font-bold text-[#A1A4B0]">{link.name}</div>
                       <a
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[11px] text-[#9CA3AF] hover:text-[#00F2FE] truncate block transition"
+                        className="text-sm font-semibold text-white hover:text-[#00F2FE] truncate block mt-0.5 transition"
                       >
                         {link.url}
                       </a>
@@ -795,7 +784,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
                   <div className="flex items-center gap-1 flex-shrink-0">
                     <button
                       onClick={() => copyToClipboard(link.url, link.name)}
-                      className="p-1.5 text-white/40 hover:text-white transition"
+                      className="p-1.5 text-[#5E626E] hover:text-white transition"
                       title="Copy Link"
                     >
                       <Copy className="w-3.5 h-3.5" />
@@ -804,7 +793,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-1.5 text-white/40 hover:text-white transition"
+                      className="p-1.5 text-[#5E626E] hover:text-white transition"
                       title="Open Link"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -818,25 +807,25 @@ export default function ProfileView({ profile }: ProfileViewProps) {
 
         {/* EXPERIENCE TIMELINE */}
         {experience.length > 0 && (
-          <section className="mb-7">
-            <h3 className="text-[11px] font-bold text-[#9CA3AF] tracking-[0.15em] uppercase mb-3">
+          <section className="mb-6">
+            <h3 className="text-[11px] font-bold text-[#A1A4B0] tracking-[1.5px] uppercase mb-2.5">
               EXPERIENCE
             </h3>
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {experience.map((exp, idx) => (
                 <div
                   key={idx}
-                  className="bg-[#171822]/60 border border-white/10 rounded-xl p-3.5 relative overflow-hidden"
+                  className="bg-[#0F1013] border border-white/[0.08] rounded-[14px] p-3.5"
                 >
                   <div className="text-sm font-bold text-white">{exp.title}</div>
                   <div className="text-xs text-[#00F2FE] font-medium mt-0.5">{exp.company}</div>
                   {(exp.startDate || exp.endDate) && (
-                    <div className="text-[11px] text-[#9CA3AF] mt-1">
+                    <div className="text-[11px] text-[#A1A4B0] mt-1">
                       {exp.startDate} {exp.endDate ? `— ${exp.endDate}` : ''}
                     </div>
                   )}
                   {exp.description && (
-                    <p className="text-xs text-white/70 mt-2 leading-relaxed font-light">
+                    <p className="text-xs text-white/70 mt-2 leading-relaxed font-normal">
                       {exp.description}
                     </p>
                   )}
@@ -848,17 +837,17 @@ export default function ProfileView({ profile }: ProfileViewProps) {
 
         {/* EDUCATION */}
         {education.length > 0 && (
-          <section className="mb-7">
-            <h3 className="text-[11px] font-bold text-[#9CA3AF] tracking-[0.15em] uppercase mb-3">
+          <section className="mb-6">
+            <h3 className="text-[11px] font-bold text-[#A1A4B0] tracking-[1.5px] uppercase mb-2.5">
               EDUCATION
             </h3>
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {education.map((edu, idx) => (
                 <div
                   key={idx}
-                  className="bg-[#171822]/60 border border-white/10 rounded-xl p-3.5 flex items-start gap-3"
+                  className="bg-[#0F1013] border border-white/[0.08] rounded-[14px] p-3.5 flex items-start gap-3"
                 >
-                  <GraduationCap className="w-5 h-5 text-[#00F2FE] flex-shrink-0 mt-0.5" />
+                  <GraduationCap className="w-4 h-4 text-[#00F2FE] flex-shrink-0 mt-0.5" />
                   <div>
                     <div className="text-sm font-bold text-white">{edu.institution}</div>
                     {(edu.degree || edu.fieldOfStudy) && (
@@ -867,7 +856,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
                       </div>
                     )}
                     {(edu.startYear || edu.endYear) && (
-                      <div className="text-[11px] text-[#9CA3AF] mt-1">
+                      <div className="text-[11px] text-[#A1A4B0] mt-1">
                         {edu.startYear} {edu.endYear ? `— ${edu.endYear}` : ''}
                       </div>
                     )}
@@ -880,15 +869,15 @@ export default function ProfileView({ profile }: ProfileViewProps) {
 
         {/* SKILLS */}
         {skills.length > 0 && (
-          <section className="mb-7">
-            <h3 className="text-[11px] font-bold text-[#9CA3AF] tracking-[0.15em] uppercase mb-3">
+          <section className="mb-6">
+            <h3 className="text-[11px] font-bold text-[#A1A4B0] tracking-[1.5px] uppercase mb-2.5">
               SKILLS
             </h3>
             <div className="flex flex-wrap gap-2">
               {skills.map((skill, idx) => (
                 <span
                   key={idx}
-                  className="px-3 py-1.5 rounded-full bg-white/[0.06] border border-white/10 text-white/80 text-xs font-medium"
+                  className="px-3 py-1.5 rounded-full bg-[#17181D] border border-white/[0.08] text-white/90 text-xs font-medium"
                 >
                   {skill}
                 </span>
@@ -896,34 +885,34 @@ export default function ProfileView({ profile }: ProfileViewProps) {
             </div>
           </section>
         )}
-      </main>
+      </div>
 
-      {/* Floating Bottom Navigation Bar */}
-      <footer className="fixed bottom-0 inset-x-0 bg-[#0E0F14]/80 backdrop-blur-xl border-t border-white/10 py-3.5 px-4 z-40">
-        <div className="max-w-xl mx-auto flex items-center gap-3">
+      {/* Floating Bottom Navigation Bar (Centered within mobile frame) */}
+      <footer className="fixed bottom-0 inset-x-0 bg-[#000000]/95 backdrop-blur-xl border-t border-[#17181D] py-3 px-4 z-40">
+        <div className="max-w-[430px] mx-auto flex items-center gap-2.5">
+          {/* Primary CTA: Stadium White button */}
           <button
             onClick={() => setConnectModalOpen(true)}
-            className="flex-1 py-3.5 px-6 rounded-full bg-gradient-to-r from-[#0064E0] to-[#00A3FF] hover:from-[#0051B8] hover:to-[#0090E0] text-white font-bold text-sm tracking-wide shadow-lg shadow-[#0064E0]/20 active:scale-[0.98] transition flex items-center justify-center gap-2"
+            className="flex-1 py-3 px-5 rounded-full bg-white hover:bg-neutral-100 text-black font-bold text-sm tracking-tight shadow-sm active:scale-[0.98] transition flex items-center justify-center gap-2"
           >
+            <UserPlus className="w-4 h-4 text-black" />
             <span>Connect on Jana</span>
           </button>
-          {!isOwnProfile && (
+
+          {!isOwnProfile && !hasVouched && (
             <button
               onClick={handleVouchClick}
-              className={`px-4 py-3.5 rounded-full border text-xs font-bold transition flex items-center gap-1.5 active:scale-95 ${
-                hasVouched
-                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                  : 'bg-white/5 border-white/15 hover:bg-white/10 text-white'
-              }`}
-              title={hasVouched ? 'You have vouched for this user' : 'Vouch for this user'}
+              className="px-3.5 py-3 rounded-full bg-white/10 hover:bg-white/15 border border-white/20 text-white text-xs font-bold transition flex items-center gap-1.5 active:scale-95 flex-shrink-0"
+              title="Vouch for this user"
             >
               <Shield className="w-3.5 h-3.5 text-[#00F2FE]" />
-              <span>{hasVouched ? 'Vouched' : 'Vouch'}</span>
+              <span>Vouch</span>
             </button>
           )}
+
           <button
             onClick={() => copyToClipboard(currentUrl, 'Profile Link')}
-            className="w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 active:scale-95 transition flex items-center justify-center text-white flex-shrink-0"
+            className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 active:scale-95 transition flex items-center justify-center text-white flex-shrink-0"
             title="Share Profile"
           >
             <Copy className="w-4 h-4" />
@@ -931,17 +920,17 @@ export default function ProfileView({ profile }: ProfileViewProps) {
         </div>
       </footer>
 
-      {/* Social Action Sheet / Modal (Matching Flutter Bottom Sheet) */}
+      {/* Social Action Sheet / Modal (Matching Flutter _showSocialActionSheet) */}
       {socialModal && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-[#171822] border border-white/10 rounded-t-[28px] sm:rounded-2xl p-6 w-full max-w-md shadow-2xl relative animate-in slide-in-from-bottom-8">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-[#0F1013] border border-white/10 rounded-t-[24px] sm:rounded-2xl p-6 w-full max-w-[420px] shadow-2xl relative animate-in slide-in-from-bottom-8">
             <button
               onClick={() => setSocialModal(null)}
               className="absolute top-4 right-4 text-white/50 hover:text-white p-1"
             >
               <CloseIcon className="w-5 h-5" />
             </button>
-            <div className="w-9 h-1 rounded-full bg-white/20 mx-auto mb-6 sm:hidden" />
+            <div className="w-9 h-1 rounded-full bg-white/20 mx-auto mb-5 sm:hidden" />
 
             <div className="flex items-center gap-3.5 mb-5">
               <div className="w-11 h-11 rounded-full bg-[#00F2FE]/10 flex items-center justify-center text-[#00F2FE]">
@@ -954,11 +943,11 @@ export default function ProfileView({ profile }: ProfileViewProps) {
               </div>
               <div>
                 <div className="text-base font-bold text-white">{socialModal.displayName}</div>
-                <div className="text-xs text-[#9CA3AF]">@{socialModal.handle}</div>
+                <div className="text-xs text-[#A1A4B0]">@{socialModal.handle}</div>
               </div>
             </div>
 
-            <div className="bg-[#1E1F2C] border border-white/10 rounded-xl p-3 mb-5 overflow-hidden text-ellipsis whitespace-nowrap text-xs text-[#00F2FE]">
+            <div className="bg-[#17181D] border border-white/10 rounded-xl p-3 mb-5 overflow-hidden text-ellipsis whitespace-nowrap text-xs text-[#00F2FE]">
               {socialModal.url}
             </div>
 
@@ -968,7 +957,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
                   copyToClipboard(socialModal.url, `${socialModal.displayName} Link`);
                   setSocialModal(null);
                 }}
-                className="py-3 px-4 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-white font-bold text-xs flex items-center justify-center gap-2 transition"
+                className="py-3 px-4 rounded-xl border border-white/15 bg-transparent hover:bg-white/5 text-[#A1A4B0] hover:text-white font-bold text-xs flex items-center justify-center gap-2 transition"
               >
                 <Copy className="w-4 h-4" />
                 <span>Copy Link</span>
@@ -978,7 +967,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setSocialModal(null)}
-                className="py-3 px-4 rounded-xl bg-white text-black font-bold text-xs flex items-center justify-center gap-2 hover:bg-white/90 transition"
+                className="py-3 px-4 rounded-xl bg-white text-black font-bold text-xs flex items-center justify-center gap-2 hover:bg-white/90 transition shadow-sm"
               >
                 <ExternalLink className="w-4 h-4" />
                 <span>Open Account</span>
@@ -990,36 +979,36 @@ export default function ProfileView({ profile }: ProfileViewProps) {
 
       {/* Connect on Jana Modal */}
       {connectModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-[#171822] border border-white/10 rounded-t-[28px] sm:rounded-2xl p-6 w-full max-w-md shadow-2xl relative text-center animate-in slide-in-from-bottom-8">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-[#0F1013] border border-white/10 rounded-t-[24px] sm:rounded-2xl p-6 w-full max-w-[420px] shadow-2xl relative text-center animate-in slide-in-from-bottom-8">
             <button
               onClick={() => setConnectModalOpen(false)}
               className="absolute top-4 right-4 text-white/50 hover:text-white p-1"
             >
               <CloseIcon className="w-5 h-5" />
             </button>
-            <div className="w-9 h-1 rounded-full bg-white/20 mx-auto mb-5 sm:hidden" />
+            <div className="w-9 h-1 rounded-full bg-white/20 mx-auto mb-4 sm:hidden" />
 
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/Jana.png" alt="Jana" className="w-12 h-12 object-contain mx-auto mb-3" />
-            <h3 className="text-xl font-bold text-white">Connect with {name}</h3>
-            <p className="text-xs text-[#9CA3AF] mt-1.5 mb-5 max-w-xs mx-auto leading-relaxed">
+            <h3 className="text-lg font-bold text-white">Connect with {name}</h3>
+            <p className="text-xs text-[#A1A4B0] mt-1.5 mb-5 max-w-xs mx-auto leading-relaxed">
               Jana is a sealed, intentional space for your closest circle. Install the app to exchange cards and start a direct conversation.
             </p>
 
             {/* QR Code */}
-            <div className="bg-white p-3 rounded-2xl inline-block mx-auto mb-4 shadow-inner">
+            <div className="bg-white p-3 rounded-2xl inline-block mx-auto mb-3 shadow-inner">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={qrCodeUrl} alt="Scan Profile QR" className="w-36 h-36 mx-auto" />
+              <img src={qrCodeUrl} alt="Scan Profile QR" className="w-32 h-32 mx-auto" />
             </div>
-            <p className="text-[11px] text-[#9CA3AF] mb-5">Scan with your phone camera</p>
+            <p className="text-[11px] text-[#A1A4B0] mb-5">Scan with your phone camera</p>
 
             <div className="flex flex-col gap-2.5">
               <a
                 href="https://apps.apple.com/us/app/jana-mandala/id6785388442"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full py-3 px-4 rounded-xl bg-white/5 border border-white/10 hover:border-[#00F2FE]/40 text-white font-bold text-xs flex items-center justify-center gap-2 hover:bg-white/10 transition"
+                className="w-full py-3 px-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/25 text-white font-bold text-xs flex items-center justify-center gap-2 hover:bg-white/10 transition"
               >
                 <span>Download on Apple App Store</span>
               </a>
@@ -1027,7 +1016,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
                 href="https://play.google.com/store/apps/details?id=com.india.jana"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full py-3 px-4 rounded-xl bg-white/5 border border-white/10 hover:border-[#00F2FE]/40 text-white font-bold text-xs flex items-center justify-center gap-2 hover:bg-white/10 transition"
+                className="w-full py-3 px-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/25 text-white font-bold text-xs flex items-center justify-center gap-2 hover:bg-white/10 transition"
               >
                 <span>Get it on Google Play</span>
               </a>

@@ -201,8 +201,8 @@ export default function AuthModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-[#13141F] border border-white/10 rounded-t-[28px] sm:rounded-2xl p-6 sm:p-7 w-full max-w-md shadow-2xl relative animate-in slide-in-from-bottom-6 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="bg-[#0F1013] border border-white/[0.10] rounded-t-[24px] sm:rounded-[24px] p-6 sm:p-7 w-full max-w-md shadow-2xl relative animate-in slide-in-from-bottom-6 max-h-[90vh] overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -217,10 +217,8 @@ export default function AuthModal({
 
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#0064E0] to-[#00F2FE] p-0.5 mx-auto mb-3 shadow-lg shadow-[#0064E0]/20 flex items-center justify-center">
-            <div className="w-full h-full bg-[#13141F] rounded-[14px] flex items-center justify-center">
-              <ShieldCheck className="w-6 h-6 text-[#00F2FE]" />
-            </div>
+          <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/15 p-0.5 mx-auto mb-3 shadow-lg flex items-center justify-center">
+            <ShieldCheck className="w-6 h-6 text-white" />
           </div>
           <h2 className="text-xl font-bold text-white tracking-tight">
             {mode === 'signup' && 'Create Jana Account'}
@@ -228,22 +226,22 @@ export default function AuthModal({
             {mode === 'otp' && 'Verify Your Email'}
             {mode === 'forgot' && 'Reset Password'}
           </h2>
-          <p className="text-xs text-[#9CA3AF] mt-1">{actionPrompt}</p>
+          <p className="text-xs text-[#A1A4B0] mt-1">{actionPrompt}</p>
         </div>
 
         {/* Tab switcher (Sign In vs Sign Up) */}
         {(mode === 'signin' || mode === 'signup') && (
-          <div className="flex rounded-xl bg-white/[0.04] p-1 border border-white/10 mb-5">
+          <div className="flex rounded-full bg-[#17181D] p-1 border border-white/[0.08] mb-5">
             <button
               type="button"
               onClick={() => {
                 setMode('signin');
                 resetForm();
               }}
-              className={`flex-1 py-2 text-xs font-semibold rounded-lg transition ${
+              className={`flex-1 py-2 text-xs font-semibold rounded-full transition ${
                 mode === 'signin'
-                  ? 'bg-[#0064E0] text-white shadow-sm'
-                  : 'text-white/60 hover:text-white'
+                  ? 'bg-white text-black shadow-sm'
+                  : 'text-[#A1A4B0] hover:text-white'
               }`}
             >
               Sign In
@@ -254,10 +252,10 @@ export default function AuthModal({
                 setMode('signup');
                 resetForm();
               }}
-              className={`flex-1 py-2 text-xs font-semibold rounded-lg transition ${
+              className={`flex-1 py-2 text-xs font-semibold rounded-full transition ${
                 mode === 'signup'
-                  ? 'bg-[#0064E0] text-white shadow-sm'
-                  : 'text-white/60 hover:text-white'
+                  ? 'bg-white text-black shadow-sm'
+                  : 'text-[#A1A4B0] hover:text-white'
               }`}
             >
               Sign Up
@@ -272,7 +270,7 @@ export default function AuthModal({
               type="button"
               onClick={handleGoogleSignIn}
               disabled={loading}
-              className="w-full py-2.5 px-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-semibold transition flex items-center justify-center gap-2.5 active:scale-[0.99]"
+              className="w-full py-2.5 px-4 rounded-full bg-[#17181D] hover:bg-[#22242B] border border-white/[0.10] text-white text-xs font-semibold transition flex items-center justify-center gap-2.5 active:scale-[0.99]"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path
@@ -296,8 +294,8 @@ export default function AuthModal({
             </button>
 
             <div className="relative my-4 flex items-center justify-center">
-              <div className="border-t border-white/10 w-full" />
-              <span className="bg-[#13141F] px-3 text-[11px] text-white/40 uppercase tracking-wider absolute">
+              <div className="border-t border-white/[0.08] w-full" />
+              <span className="bg-[#0F1013] px-3 text-[11px] text-[#5E626E] uppercase tracking-wider absolute">
                 or email
               </span>
             </div>
@@ -312,8 +310,8 @@ export default function AuthModal({
           </div>
         )}
         {infoMsg && (
-          <div className="p-3 mb-4 rounded-xl bg-[#00F2FE]/10 border border-[#00F2FE]/30 text-[#00F2FE] text-xs flex items-start gap-2">
-            <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" />
+          <div className="p-3 mb-4 rounded-xl bg-white/[0.08] border border-white/20 text-white text-xs flex items-start gap-2">
+            <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5 text-white" />
             <span className="flex-1">{infoMsg}</span>
           </div>
         )}
@@ -322,43 +320,43 @@ export default function AuthModal({
         {mode === 'signin' && (
           <form onSubmit={handleSignIn} className="space-y-3.5">
             <div>
-              <label className="block text-[11px] font-semibold text-white/70 mb-1.5">Email</label>
+              <label className="block text-[11px] font-semibold text-[#A1A4B0] mb-1.5">Email</label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-white/40 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Mail className="w-4 h-4 text-[#5E626E] absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@example.com"
                   required
-                  className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-[#00F2FE] transition"
+                  className="w-full pl-10 pr-4 py-2.5 bg-[#17181D] border border-white/[0.08] rounded-xl text-white text-xs placeholder:text-[#5E626E] focus:outline-none focus:border-white/30 transition"
                 />
               </div>
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-[11px] font-semibold text-white/70">Password</label>
+                <label className="text-[11px] font-semibold text-[#A1A4B0]">Password</label>
                 <button
                   type="button"
                   onClick={() => {
                     setMode('forgot');
                     resetForm();
                   }}
-                  className="text-[10px] text-[#00F2FE] hover:underline"
+                  className="text-[10px] text-white/70 hover:underline"
                 >
                   Forgot?
                 </button>
               </div>
               <div className="relative">
-                <Lock className="w-4 h-4 text-white/40 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Lock className="w-4 h-4 text-[#5E626E] absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="w-full pl-10 pr-10 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-[#00F2FE] transition"
+                  className="w-full pl-10 pr-10 py-2.5 bg-[#17181D] border border-white/[0.08] rounded-xl text-white text-xs placeholder:text-[#5E626E] focus:outline-none focus:border-white/30 transition"
                 />
                 <button
                   type="button"
@@ -373,13 +371,13 @@ export default function AuthModal({
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-[#0064E0] to-[#00A3FF] hover:from-[#0051B8] hover:to-[#0090E0] text-white text-xs font-bold transition shadow-lg shadow-[#0064E0]/25 active:scale-[0.99] flex items-center justify-center gap-2 mt-4"
+              className="w-full py-3.5 rounded-full bg-white hover:bg-white/90 text-black text-xs font-bold transition shadow-lg active:scale-[0.99] flex items-center justify-center gap-2 mt-4"
             >
               {loading ? (
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
               ) : (
                 <>
-                  <span>Sign In & Continue</span>
+                  <span>Sign In</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </>
               )}
@@ -391,62 +389,62 @@ export default function AuthModal({
         {mode === 'signup' && (
           <form onSubmit={handleSignUp} className="space-y-3">
             <div>
-              <label className="block text-[11px] font-semibold text-white/70 mb-1">Full Name</label>
+              <label className="block text-[11px] font-semibold text-[#A1A4B0] mb-1">Full Name</label>
               <div className="relative">
-                <User className="w-4 h-4 text-white/40 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <User className="w-4 h-4 text-[#5E626E] absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Alex Rivera"
                   required
-                  className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-[#00F2FE] transition"
+                  className="w-full pl-10 pr-4 py-2.5 bg-[#17181D] border border-white/[0.08] rounded-xl text-white text-xs placeholder:text-[#5E626E] focus:outline-none focus:border-white/30 transition"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-white/70 mb-1">
-                Profession <span className="text-white/40 font-normal">(optional)</span>
+              <label className="block text-[11px] font-semibold text-[#A1A4B0] mb-1">
+                Profession <span className="text-[#5E626E] font-normal">(optional)</span>
               </label>
               <div className="relative">
-                <Briefcase className="w-4 h-4 text-white/40 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Briefcase className="w-4 h-4 text-[#5E626E] absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={profession}
                   onChange={(e) => setProfession(e.target.value)}
                   placeholder="Software Engineer / Founder"
-                  className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-[#00F2FE] transition"
+                  className="w-full pl-10 pr-4 py-2.5 bg-[#17181D] border border-white/[0.08] rounded-xl text-white text-xs placeholder:text-[#5E626E] focus:outline-none focus:border-white/30 transition"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-white/70 mb-1">Email</label>
+              <label className="block text-[11px] font-semibold text-[#A1A4B0] mb-1">Email</label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-white/40 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Mail className="w-4 h-4 text-[#5E626E] absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@example.com"
                   required
-                  className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-[#00F2FE] transition"
+                  className="w-full pl-10 pr-4 py-2.5 bg-[#17181D] border border-white/[0.08] rounded-xl text-white text-xs placeholder:text-[#5E626E] focus:outline-none focus:border-white/30 transition"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-white/70 mb-1">Password</label>
+              <label className="block text-[11px] font-semibold text-[#A1A4B0] mb-1">Password</label>
               <div className="relative">
-                <Lock className="w-4 h-4 text-white/40 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Lock className="w-4 h-4 text-[#5E626E] absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Min. 6 characters"
                   required
-                  className="w-full pl-10 pr-10 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-[#00F2FE] transition"
+                  className="w-full pl-10 pr-10 py-2.5 bg-[#17181D] border border-white/[0.08] rounded-xl text-white text-xs placeholder:text-[#5E626E] focus:outline-none focus:border-white/30 transition"
                 />
                 <button
                   type="button"
@@ -465,15 +463,15 @@ export default function AuthModal({
                 id="terms"
                 checked={acceptTerms}
                 onChange={(e) => setAcceptTerms(e.target.checked)}
-                className="mt-0.5 rounded border-white/20 bg-white/5 text-[#0064E0] focus:ring-0 cursor-pointer"
+                className="mt-0.5 rounded border-white/20 bg-white/5 text-white focus:ring-0 cursor-pointer"
               />
-              <label htmlFor="terms" className="text-[11px] text-white/70 leading-relaxed cursor-pointer select-none">
+              <label htmlFor="terms" className="text-[11px] text-[#A1A4B0] leading-relaxed cursor-pointer select-none">
                 I agree to the{' '}
-                <Link href="/legal" target="_blank" className="text-[#00F2FE] hover:underline">
+                <Link href="/legal" target="_blank" className="text-white hover:underline font-medium">
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link href="/eula" target="_blank" className="text-[#00F2FE] hover:underline">
+                <Link href="/eula" target="_blank" className="text-white hover:underline font-medium">
                   EULA
                 </Link>
                 .
@@ -483,10 +481,10 @@ export default function AuthModal({
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-[#0064E0] to-[#00A3FF] hover:from-[#0051B8] hover:to-[#0090E0] text-white text-xs font-bold transition shadow-lg shadow-[#0064E0]/25 active:scale-[0.99] flex items-center justify-center gap-2 mt-4"
+              className="w-full py-3.5 rounded-full bg-white hover:bg-white/90 text-black text-xs font-bold transition shadow-lg active:scale-[0.99] flex items-center justify-center gap-2 mt-4"
             >
               {loading ? (
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
               ) : (
                 <>
                   <span>Create Account</span>
@@ -501,7 +499,7 @@ export default function AuthModal({
         {mode === 'otp' && (
           <form onSubmit={handleVerifyOtp} className="space-y-4">
             <div>
-              <label className="block text-[11px] font-semibold text-white/70 mb-1.5">
+              <label className="block text-[11px] font-semibold text-[#A1A4B0] mb-1.5">
                 6-Digit Verification Code
               </label>
               <input
@@ -511,17 +509,17 @@ export default function AuthModal({
                 placeholder="123456"
                 maxLength={8}
                 required
-                className="w-full text-center tracking-widest text-lg py-3 bg-white/5 border border-white/10 rounded-xl text-white font-mono placeholder:text-white/20 focus:outline-none focus:border-[#00F2FE] transition"
+                className="w-full text-center tracking-widest text-lg py-3 bg-[#17181D] border border-white/[0.08] rounded-xl text-white font-mono placeholder:text-[#5E626E] focus:outline-none focus:border-white/30 transition"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-[#0064E0] to-[#00A3FF] hover:from-[#0051B8] hover:to-[#0090E0] text-white text-xs font-bold transition shadow-lg shadow-[#0064E0]/25 active:scale-[0.99] flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-full bg-white hover:bg-white/90 text-black text-xs font-bold transition shadow-lg active:scale-[0.99] flex items-center justify-center gap-2"
             >
               {loading ? (
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
               ) : (
                 <span>Confirm & Enter</span>
               )}
@@ -533,7 +531,7 @@ export default function AuthModal({
                 setMode('signup');
                 resetForm();
               }}
-              className="w-full text-center text-[11px] text-white/50 hover:text-white transition"
+              className="w-full text-center text-[11px] text-[#A1A4B0] hover:text-white transition"
             >
               ← Back to Sign Up
             </button>
@@ -544,18 +542,18 @@ export default function AuthModal({
         {mode === 'forgot' && (
           <form onSubmit={handleForgotPassword} className="space-y-4">
             <div>
-              <label className="block text-[11px] font-semibold text-white/70 mb-1.5">
+              <label className="block text-[11px] font-semibold text-[#A1A4B0] mb-1.5">
                 Your Email Address
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-white/40 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Mail className="w-4 h-4 text-[#5E626E] absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@example.com"
                   required
-                  className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-[#00F2FE] transition"
+                  className="w-full pl-10 pr-4 py-2.5 bg-[#17181D] border border-white/[0.08] rounded-xl text-white text-xs placeholder:text-[#5E626E] focus:outline-none focus:border-white/30 transition"
                 />
               </div>
             </div>
@@ -563,10 +561,10 @@ export default function AuthModal({
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-[#0064E0] to-[#00A3FF] hover:from-[#0051B8] hover:to-[#0090E0] text-white text-xs font-bold transition shadow-lg active:scale-[0.99] flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-full bg-white hover:bg-white/90 text-black text-xs font-bold transition shadow-lg active:scale-[0.99] flex items-center justify-center gap-2"
             >
               {loading ? (
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
               ) : (
                 <span>Send Reset Link</span>
               )}
@@ -578,7 +576,7 @@ export default function AuthModal({
                 setMode('signin');
                 resetForm();
               }}
-              className="w-full text-center text-[11px] text-white/50 hover:text-white transition"
+              className="w-full text-center text-[11px] text-[#A1A4B0] hover:text-white transition"
             >
               ← Back to Sign In
             </button>
