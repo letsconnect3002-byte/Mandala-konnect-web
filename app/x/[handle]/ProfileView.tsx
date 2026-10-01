@@ -21,10 +21,13 @@ import {
   LogOut,
   ShieldCheck,
   UserPlus,
+  Pencil,
+  Sparkles,
 } from 'lucide-react';
 import { supabase, ensureUserProfile, UserProfileSummary } from '@/lib/supabase';
 import AuthModal from '@/components/AuthModal';
 import VouchModal from '@/components/VouchModal';
+import EditProfileModal from '@/components/EditProfileModal';
 
 export interface VouchItem {
   id: string;
@@ -42,8 +45,39 @@ export interface VouchItem {
   } | null;
 }
 
+export interface ExperienceItem {
+  id?: string;
+  title: string;
+  company: string;
+  companyUrl?: string;
+  company_url?: string;
+  location?: string;
+  startDate?: string;
+  start_date?: string;
+  endDate?: string;
+  end_date?: string;
+  isCurrent?: boolean;
+  is_current?: boolean;
+  description?: string;
+}
+
+export interface EducationItem {
+  id?: string;
+  school?: string;
+  institution?: string;
+  degree?: string;
+  fieldOfStudy?: string;
+  field_of_study?: string;
+  startYear?: string;
+  start_year?: string;
+  endYear?: string;
+  end_year?: string;
+  description?: string;
+}
+
 export interface ProfileData {
   id: number;
+  owner_id?: string | null;
   name: string;
   profession?: string | null;
   company?: string | null;
@@ -62,22 +96,9 @@ export interface ProfileData {
   anon_name?: string | null;
   vibe_tag?: string | null;
   custom_links?: Array<{ id?: string; name: string; url: string }> | null;
-  experience?: Array<{
-    title: string;
-    company: string;
-    startDate?: string;
-    endDate?: string;
-    isCurrent?: boolean;
-    description?: string;
-  }> | null;
-  education?: Array<{
-    institution: string;
-    degree?: string;
-    fieldOfStudy?: string;
-    startYear?: string;
-    endYear?: string;
-  }> | null;
-  skills?: string[] | null;
+  experience?: ExperienceItem[] | any;
+  education?: EducationItem[] | any;
+  skills?: string[] | any;
   vouchCount?: number;
   vouches?: VouchItem[] | null;
   field_assignments?: Record<string, { c?: boolean; p?: boolean; pr?: boolean }> | null;
@@ -87,8 +108,99 @@ interface ProfileViewProps {
   profile: ProfileData;
 }
 
+export function normalizeExperience(raw: any): ExperienceItem[] {
+  if (!raw) return [];
+  let list = raw;
+  if (typeof raw === 'string') {
+    try {
+      list = JSON.parse(raw);
+    } catch {
+      return [];
+    }
+  }
+  if (!Array.isArray(list)) return [];
+  return list.map((item: any, idx: number) => {
+    const isCurrent =
+      item.is_current === true ||
+      item.is_current === 'true' ||
+      item.isCurrent === true ||
+      item.isCurrent === 'true' ||
+      (typeof item.end_date === 'string' && item.end_date.toLowerCase().includes('present')) ||
+      (typeof item.endDate === 'string' && item.endDate.toLowerCase().includes('present'));
+
+    const rawEndDate = item.end_date || item.endDate || '';
+    const endDate = isCurrent ? 'Present' : rawEndDate;
+
+    return {
+      id: item.id?.toString() || `exp-${idx}`,
+      title: item.title || item.position || item.role || 'Role',
+      company: item.company || item.company_name || '',
+      companyUrl: item.company_url || item.companyUrl || '',
+      location: item.location || '',
+      startDate: item.start_date || item.startDate || '',
+      endDate,
+      isCurrent,
+      description: item.description || '',
+    };
+  });
+}
+
+export function normalizeEducation(raw: any): EducationItem[] {
+  if (!raw) return [];
+  let list = raw;
+  if (typeof raw === 'string') {
+    try {
+      list = JSON.parse(raw);
+    } catch {
+      return [];
+    }
+  }
+  if (!Array.isArray(list)) return [];
+  return list.map((item: any, idx: number) => ({
+    id: item.id?.toString() || `edu-${idx}`,
+    school: item.school || item.institution || item.university || item.college || 'Institution',
+    degree: item.degree || '',
+    fieldOfStudy: item.field_of_study || item.fieldOfStudy || item.major || '',
+    startYear: item.start_year || item.startYear || '',
+    endYear: item.end_year || item.endYear || '',
+    description: item.description || '',
+  }));
+}
+
+export function normalizeSkills(raw: any): string[] {
+  if (!raw) return [];
+  let list = raw;
+  if (typeof raw === 'string') {
+    try {
+      list = JSON.parse(raw);
+    } catch {
+      return [];
+    }
+  }
+  if (!Array.isArray(list)) return [];
+  return list
+    .map((s: any) => (typeof s === 'string' ? s : String(s)))
+    .filter((s: string) => s.trim().length > 0);
+}
+
+export function getCompanyLogoUrl(url?: string): string {
+  if (!url) return '';
+  const clean = url.trim();
+  if (!clean) return '';
+  try {
+    const formatted = clean.startsWith('http://') || clean.startsWith('https://') ? clean : `https://${clean}`;
+    const parsed = new URL(formatted);
+    const host = parsed.hostname.replace(/^www\./, '');
+    if (host && host.includes('.')) {
+      return `https://www.google.com/s2/favicons?domain=${host}&sz=128`;
+    }
+  } catch {}
+  return '';
+}
+
 export default function ProfileView({ profile }: ProfileViewProps) {
   const router = useRouter();
+  const [profileState, setProfileState] = useState<ProfileData>(profile);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [socialModal, setSocialModal] = useState<{
@@ -98,11 +210,32 @@ export default function ProfileView({ profile }: ProfileViewProps) {
     url: string;
   } | null>(null);
   const [connectModalOpen, setConnectModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+
+  // Auth & Vouch state
+  const [currentUser, setCurrentUser] = useState<UserProfileSummary | null>(null);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authPrompt, setAuthPrompt] = useState('Sign in to vouch for this profile');
+  const [vouchModalOpen, setVouchModalOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [hasVouched, setHasVouched] = useState(false);
+  const [, setMyVouch] = useState<VouchItem | null>(null);
+  const [vouchesList, setVouchesList] = useState<VouchItem[]>(profile.vouches || []);
+  const [vouchCount, setVouchCount] = useState<number>(profile.vouchCount ?? (profile.vouches?.length ?? 0));
+
+  useEffect(() => {
+    setProfileState(profile);
+    setVouchesList(profile.vouches || []);
+    setVouchCount(profile.vouchCount ?? (profile.vouches?.length ?? 0));
+  }, [profile]);
 
   const handleBack = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
 
-    // If any modal is open, dismiss it first
+    if (editModalOpen) {
+      setEditModalOpen(false);
+      return;
+    }
     if (socialModal) {
       setSocialModal(null);
       return;
@@ -141,17 +274,6 @@ export default function ProfileView({ profile }: ProfileViewProps) {
 
     router.push('/');
   };
-
-  // Auth & Vouch state
-  const [currentUser, setCurrentUser] = useState<UserProfileSummary | null>(null);
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authPrompt, setAuthPrompt] = useState('Sign in to vouch for this profile');
-  const [vouchModalOpen, setVouchModalOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [hasVouched, setHasVouched] = useState(false);
-  const [, setMyVouch] = useState<VouchItem | null>(null);
-  const [vouchesList, setVouchesList] = useState<VouchItem[]>(profile.vouches || []);
-  const [vouchCount, setVouchCount] = useState<number>(profile.vouchCount ?? (profile.vouches?.length ?? 0));
 
   const checkVouchStatus = async (voucherId: number, voucheeId: number) => {
     try {
@@ -199,8 +321,8 @@ export default function ProfileView({ profile }: ProfileViewProps) {
         const myProfile = await ensureUserProfile(session.user);
         if (isMounted) {
           setCurrentUser(myProfile);
-          if (myProfile && profile.id) {
-            checkVouchStatus(myProfile.id, profile.id);
+          if (myProfile && profileState.id) {
+            checkVouchStatus(myProfile.id, profileState.id);
           }
         }
       } else if (isMounted) {
@@ -214,12 +336,13 @@ export default function ProfileView({ profile }: ProfileViewProps) {
       isMounted = false;
       subscription.unsubscribe();
     };
-  }, [profile.id]);
+  }, [profileState.id]);
 
   // Handle ESC key to dismiss any open modals or menus
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        if (editModalOpen) setEditModalOpen(false);
         if (socialModal) setSocialModal(null);
         if (connectModalOpen) setConnectModalOpen(false);
         if (vouchModalOpen) setVouchModalOpen(false);
@@ -230,22 +353,22 @@ export default function ProfileView({ profile }: ProfileViewProps) {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [socialModal, connectModalOpen, vouchModalOpen, authModalOpen, userMenuOpen]);
+  }, [editModalOpen, socialModal, connectModalOpen, vouchModalOpen, authModalOpen, userMenuOpen]);
 
   const handleVouchClick = () => {
     if (!currentUser) {
-      setAuthPrompt(`Sign in or create an account to vouch for ${profile.name}`);
+      setAuthPrompt(`Sign in or create an account to vouch for ${profileState.name}`);
       setAuthModalOpen(true);
       return;
     }
 
-    if (currentUser.id === profile.id) {
+    if (currentUser.id === profileState.id) {
       showToast('You cannot vouch for your own profile.');
       return;
     }
 
     if (hasVouched) {
-      showToast(`You have already vouched for ${profile.name}!`);
+      showToast(`You have already vouched for ${profileState.name}!`);
       return;
     }
 
@@ -255,7 +378,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
   const handleAuthSuccess = (newProfile: UserProfileSummary) => {
     setCurrentUser(newProfile);
     showToast(`Signed in as ${newProfile.name}`);
-    if (newProfile.id !== profile.id && !hasVouched) {
+    if (newProfile.id !== profileState.id && !hasVouched) {
       setTimeout(() => {
         setVouchModalOpen(true);
       }, 350);
@@ -267,7 +390,18 @@ export default function ProfileView({ profile }: ProfileViewProps) {
     setVouchCount((prev) => prev + 1);
     setHasVouched(true);
     setMyVouch(newVouch);
-    showToast(`🎉 You have officially vouched for ${profile.name}!`);
+    showToast(`🎉 You have officially vouched for ${profileState.name}!`);
+  };
+
+  const handleProfileUpdated = (updated: Partial<ProfileData>) => {
+    setProfileState((prev) => ({
+      ...prev,
+      ...updated,
+    }));
+    showToast('Profile updated successfully!');
+    if (updated.handle && updated.handle !== profileState.handle) {
+      router.replace(`/x/${updated.handle}`);
+    }
   };
 
   const handleSignOut = async () => {
@@ -279,12 +413,16 @@ export default function ProfileView({ profile }: ProfileViewProps) {
     showToast('Signed out successfully');
   };
 
-  const isOwnProfile = currentUser?.id === profile.id;
-  const fa = profile.field_assignments;
+  const isOwnProfile = Boolean(
+    currentUser && (currentUser.id === profileState.id || (profileState.owner_id && currentUser.owner_id === profileState.owner_id))
+  );
+
+  const fa = profileState.field_assignments;
 
   // Helper to check if a field is permitted to display.
   // "pr" (private) === true means DO NOT DISPLAY.
   const isFieldAllowed = (key: string): boolean => {
+    if (isOwnProfile) return true; // Owner can see all fields
     if (!fa || typeof fa !== 'object') return true;
 
     let config = fa[key];
@@ -404,42 +542,48 @@ export default function ProfileView({ profile }: ProfileViewProps) {
   };
 
   const socials = [
-    getSocialInfo('linkedin', profile.linkedin),
-    getSocialInfo('twitter', profile.twitter),
-    getSocialInfo('instagram', profile.instagram),
-    getSocialInfo('spotify', profile.spotify),
+    getSocialInfo('linkedin', profileState.linkedin),
+    getSocialInfo('twitter', profileState.twitter),
+    getSocialInfo('instagram', profileState.instagram),
+    getSocialInfo('spotify', profileState.spotify),
   ].filter(Boolean) as Array<{ platform: string; name: string; handle: string; url: string }>;
 
-  const name = profile.name || 'Jana User';
+  const name = profileState.name || 'Jana User';
 
-  // Respect private flags for bio, profession, company, email, phone, avatar
-  const casualBio = isFieldAllowed('bio') && profile.bio ? profile.bio.trim() : '';
-  const profBio = isFieldAllowed('professional_bio') && profile.professional_bio ? profile.professional_bio.trim() : '';
+  // Respect private flags
+  const casualBio = isFieldAllowed('bio') && profileState.bio ? profileState.bio.trim() : '';
+  const profBio = isFieldAllowed('professional_bio') && profileState.professional_bio ? profileState.professional_bio.trim() : '';
   const bio = casualBio || profBio || '';
 
-  const profession = isFieldAllowed('profession') ? profile.profession || '' : '';
-  const company = isFieldAllowed('company') ? profile.company || '' : '';
+  const profession = isFieldAllowed('profession') ? profileState.profession || '' : '';
+  const company = isFieldAllowed('company') ? profileState.company || '' : '';
 
-  const casualEmail = isFieldAllowed('email') ? profile.email : '';
-  const profEmail = isFieldAllowed('professional_email') ? profile.professional_email : '';
+  const casualEmail = isFieldAllowed('email') ? profileState.email : '';
+  const profEmail = isFieldAllowed('professional_email') ? profileState.professional_email : '';
   const email = casualEmail || profEmail || '';
 
-  const casualPhone = isFieldAllowed('phone_number') ? profile.phone_number : '';
-  const profPhone = isFieldAllowed('professional_phone_number') ? profile.professional_phone_number : '';
+  const casualPhone = isFieldAllowed('phone_number') ? profileState.phone_number : '';
+  const profPhone = isFieldAllowed('professional_phone_number') ? profileState.professional_phone_number : '';
   const phoneNumber = casualPhone || profPhone || '';
 
-  const avatarUrl = isFieldAllowed('avatar_url') ? profile.avatar_url : null;
+  const avatarUrl = isFieldAllowed('avatar_url') ? profileState.avatar_url : null;
   const initial = name.charAt(0).toUpperCase() || '?';
 
-  // Filter custom links: only include links where pr !== true
-  const customLinks = (profile.custom_links || []).filter((link) => {
+  // Custom links
+  const customLinks = (profileState.custom_links || []).filter((link) => {
     const linkKey = link.id || link.name;
     return isFieldAllowed(linkKey);
   });
 
-  const experience = isFieldAllowed('experience') ? profile.experience || [] : [];
-  const education = isFieldAllowed('education') ? profile.education || [] : [];
-  const skills = isFieldAllowed('skills') ? profile.skills || [] : [];
+  // Normalized Experience, Education, Skills
+  const rawExperience = isFieldAllowed('experience') ? profileState.experience : [];
+  const experience = normalizeExperience(rawExperience);
+
+  const rawEducation = isFieldAllowed('education') ? profileState.education : [];
+  const education = normalizeEducation(rawEducation);
+
+  const rawSkills = isFieldAllowed('skills') ? profileState.skills : [];
+  const skills = normalizeSkills(rawSkills);
 
   const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(currentUrl)}&color=000000`;
@@ -490,15 +634,29 @@ export default function ProfileView({ profile }: ProfileViewProps) {
 
                 {userMenuOpen && (
                   <div className="absolute right-0 mt-2 w-44 rounded-xl bg-[#17181D] border border-white/15 shadow-2xl p-1.5 z-50 text-xs animate-in fade-in">
-                    {currentUser.handle && (
-                      <Link
-                        href={`/x/${currentUser.handle}`}
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg text-white hover:bg-white/10 transition"
+                    {isOwnProfile ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUserMenuOpen(false);
+                          setEditModalOpen(true);
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-white hover:bg-white/10 transition text-left"
                       >
-                        <UserIcon className="w-3.5 h-3.5 text-[#00F2FE]" />
-                        <span>My Profile</span>
-                      </Link>
+                        <Pencil className="w-3.5 h-3.5 text-[#00F2FE]" />
+                        <span>Edit Profile</span>
+                      </button>
+                    ) : (
+                      currentUser.handle && (
+                        <Link
+                          href={`/x/${currentUser.handle}`}
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-2 px-3 py-2 rounded-lg text-white hover:bg-white/10 transition"
+                        >
+                          <UserIcon className="w-3.5 h-3.5 text-[#00F2FE]" />
+                          <span>My Profile</span>
+                        </Link>
+                      )
                     )}
                     <button
                       type="button"
@@ -526,7 +684,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
           </div>
         </header>
 
-        {/* Identity Section (Avatar, Name, Vouch pill) */}
+        {/* Identity Section (Avatar, Name, Vouch / Edit Profile) */}
         <section className="flex items-center gap-4 mb-6">
           {/* Avatar with Pink-Cyan Gradient Border */}
           <div className="w-[72px] h-[72px] rounded-full p-[3px] bg-gradient-to-br from-[#EC4899] to-[#00F2FE] flex-shrink-0 shadow-md">
@@ -547,7 +705,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
             </div>
           </div>
 
-          {/* Name & Vouch */}
+          {/* Name & Actions */}
           <div className="flex-1 min-w-0">
             <h2 className="text-[18px] font-black text-white tracking-[0.5px] truncate leading-snug">{name}</h2>
             {company && (
@@ -556,9 +714,14 @@ export default function ProfileView({ profile }: ProfileViewProps) {
             
             <div className="flex items-center gap-2 mt-2">
               {isOwnProfile ? (
-                <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/50 text-[10px] font-bold">
-                  Your Profile
-                </span>
+                <button
+                  type="button"
+                  onClick={() => setEditModalOpen(true)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 hover:bg-white/15 border border-white/25 text-white text-[11px] font-bold active:scale-95 transition"
+                >
+                  <Pencil className="w-3 h-3 text-[#00F2FE]" />
+                  <span>Edit Profile</span>
+                </button>
               ) : hasVouched ? (
                 <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/[0.08] border border-white/20 text-white/80 text-[10px] font-bold">
                   <ShieldCheck className="w-3 h-3 text-white/80" />
@@ -691,9 +854,20 @@ export default function ProfileView({ profile }: ProfileViewProps) {
         {/* MY STORY (Bio) */}
         {bio && (
           <section className="mb-6">
-            <h3 className="text-[11px] font-bold text-[#A1A4B0] tracking-[1.5px] uppercase mb-2">
-              MY STORY
-            </h3>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-[11px] font-bold text-[#A1A4B0] tracking-[1.5px] uppercase">
+                MY STORY
+              </h3>
+              {isOwnProfile && (
+                <button
+                  type="button"
+                  onClick={() => setEditModalOpen(true)}
+                  className="text-[10px] font-bold text-[#00F2FE] hover:underline"
+                >
+                  Edit Story
+                </button>
+              )}
+            </div>
             <div className="px-0.5 py-1">
               <p className="text-white/70 text-sm leading-[1.6] whitespace-pre-line font-normal">
                 {bio}
@@ -705,9 +879,20 @@ export default function ProfileView({ profile }: ProfileViewProps) {
         {/* CONNECTION DETAILS */}
         {(profession || email || phoneNumber) && (
           <section className="mb-6">
-            <h3 className="text-[11px] font-bold text-[#A1A4B0] tracking-[1.5px] uppercase mb-1">
-              CONNECTION DETAILS
-            </h3>
+            <div className="flex items-center justify-between mb-1">
+              <h3 className="text-[11px] font-bold text-[#A1A4B0] tracking-[1.5px] uppercase">
+                CONNECTION DETAILS
+              </h3>
+              {isOwnProfile && (
+                <button
+                  type="button"
+                  onClick={() => setEditModalOpen(true)}
+                  className="text-[10px] font-bold text-[#00F2FE] hover:underline"
+                >
+                  Edit Details
+                </button>
+              )}
+            </div>
             <div>
               {profession && (
                 <div className="py-2.5 flex items-center justify-between border-b border-white/[0.04] last:border-none">
@@ -867,84 +1052,256 @@ export default function ProfileView({ profile }: ProfileViewProps) {
           </section>
         )}
 
-        {/* EXPERIENCE TIMELINE */}
-        {experience.length > 0 && (
+        {/* WORK EXPERIENCE (Replicated from resume_sections_widget.dart) */}
+        {(experience.length > 0 || isOwnProfile) && (
           <section className="mb-6">
-            <h3 className="text-[11px] font-bold text-[#A1A4B0] tracking-[1.5px] uppercase mb-2.5">
-              EXPERIENCE
-            </h3>
-            <div className="space-y-2.5">
-              {experience.map((exp, idx) => (
-                <div
-                  key={idx}
-                  className="bg-[#0F1013] border border-white/[0.08] rounded-[14px] p-3.5"
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-[11px] font-bold text-[#A1A4B0] tracking-[1.5px] uppercase">
+                EXPERIENCE
+              </h3>
+              {isOwnProfile && (
+                <button
+                  type="button"
+                  onClick={() => setEditModalOpen(true)}
+                  className="text-[10px] font-bold text-[#00F2FE] hover:underline flex items-center gap-1 active:scale-95 transition"
                 >
-                  <div className="text-sm font-bold text-white">{exp.title}</div>
-                  <div className="text-xs text-[#00F2FE] font-medium mt-0.5">{exp.company}</div>
-                  {(exp.startDate || exp.endDate) && (
-                    <div className="text-[11px] text-[#A1A4B0] mt-1">
-                      {exp.startDate} {exp.endDate ? `— ${exp.endDate}` : ''}
+                  <Plus className="w-3 h-3" />
+                  <span>Add Role</span>
+                </button>
+              )}
+            </div>
+
+            {experience.length === 0 ? (
+              <div className="bg-[#0F1013] border border-white/[0.08] rounded-[16px] p-5 text-center">
+                <Briefcase className="w-6 h-6 text-[#5E626E] mx-auto mb-1.5" />
+                <p className="text-xs text-[#A1A4B0]">No work experience added yet.</p>
+                {isOwnProfile && (
+                  <button
+                    type="button"
+                    onClick={() => setEditModalOpen(true)}
+                    className="mt-2.5 py-1 px-3.5 rounded-full bg-white text-black font-bold text-xs"
+                  >
+                    + Add Experience
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="bg-[#0F1013] border border-white/[0.08] rounded-[18px] p-4 divide-y divide-white/[0.06]">
+                {experience.map((exp, idx) => {
+                  const logoUrl = getCompanyLogoUrl(exp.companyUrl);
+                  const initialChar = exp.company ? exp.company.charAt(0).toUpperCase() : '💼';
+
+                  return (
+                    <div key={exp.id || idx} className="py-3 first:pt-0 last:pb-0 flex items-start gap-3.5">
+                      {/* Company Avatar / Logo */}
+                      <div className="w-11 h-11 rounded-xl bg-[#17181D] border border-white/[0.08] flex items-center justify-center flex-shrink-0 overflow-hidden mt-0.5">
+                        {logoUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={logoUrl}
+                            alt={exp.company}
+                            className="w-6 h-6 object-contain"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLElement).style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <span className="text-sm font-bold text-[#00F2FE]">{initialChar}</span>
+                        )}
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <h4 className="text-[15px] font-bold text-[#F4F4F6] leading-snug">
+                            {exp.title}
+                          </h4>
+                          {isOwnProfile && (
+                            <button
+                              type="button"
+                              onClick={() => setEditModalOpen(true)}
+                              className="text-[#A1A4B0] hover:text-white p-1"
+                              title="Edit Experience"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Company Name & Link */}
+                        <div className="mt-0.5">
+                          {exp.companyUrl ? (
+                            <a
+                              href={exp.companyUrl.startsWith('http') ? exp.companyUrl : `https://${exp.companyUrl}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[13.5px] font-semibold text-[#A1A4B0] hover:text-[#00F2FE] inline-flex items-center gap-1 transition"
+                            >
+                              <span>{exp.company}</span>
+                              <ExternalLink className="w-3 h-3 text-[#00F2FE]" />
+                            </a>
+                          ) : (
+                            <span className="text-[13.5px] font-semibold text-[#A1A4B0]">
+                              {exp.company}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Dates & Location */}
+                        {(exp.startDate || exp.endDate || exp.location) && (
+                          <div className="text-xs text-[#5E626E] mt-1 font-medium">
+                            {exp.startDate && `${exp.startDate}`}
+                            {exp.endDate && ` – ${exp.endDate}`}
+                            {exp.location && ` · ${exp.location}`}
+                          </div>
+                        )}
+
+                        {/* Description */}
+                        {exp.description && (
+                          <p className="text-[12.5px] text-white/70 mt-1.5 leading-relaxed font-normal whitespace-pre-line">
+                            {exp.description}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  )}
-                  {exp.description && (
-                    <p className="text-xs text-white/70 mt-2 leading-relaxed font-normal">
-                      {exp.description}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </section>
         )}
 
-        {/* EDUCATION */}
-        {education.length > 0 && (
+        {/* EDUCATION (Replicated from resume_sections_widget.dart) */}
+        {(education.length > 0 || isOwnProfile) && (
           <section className="mb-6">
-            <h3 className="text-[11px] font-bold text-[#A1A4B0] tracking-[1.5px] uppercase mb-2.5">
-              EDUCATION
-            </h3>
-            <div className="space-y-2.5">
-              {education.map((edu, idx) => (
-                <div
-                  key={idx}
-                  className="bg-[#0F1013] border border-white/[0.08] rounded-[14px] p-3.5 flex items-start gap-3"
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-[11px] font-bold text-[#A1A4B0] tracking-[1.5px] uppercase">
+                EDUCATION
+              </h3>
+              {isOwnProfile && (
+                <button
+                  type="button"
+                  onClick={() => setEditModalOpen(true)}
+                  className="text-[10px] font-bold text-[#00F2FE] hover:underline flex items-center gap-1 active:scale-95 transition"
                 >
-                  <GraduationCap className="w-4 h-4 text-[#00F2FE] flex-shrink-0 mt-0.5" />
-                  <div>
-                    <div className="text-sm font-bold text-white">{edu.institution}</div>
-                    {(edu.degree || edu.fieldOfStudy) && (
-                      <div className="text-xs text-white/80 mt-0.5">
-                        {edu.degree} {edu.fieldOfStudy ? `in ${edu.fieldOfStudy}` : ''}
+                  <Plus className="w-3 h-3" />
+                  <span>Add School</span>
+                </button>
+              )}
+            </div>
+
+            {education.length === 0 ? (
+              <div className="bg-[#0F1013] border border-white/[0.08] rounded-[16px] p-5 text-center">
+                <GraduationCap className="w-6 h-6 text-[#5E626E] mx-auto mb-1.5" />
+                <p className="text-xs text-[#A1A4B0]">No education listed yet.</p>
+                {isOwnProfile && (
+                  <button
+                    type="button"
+                    onClick={() => setEditModalOpen(true)}
+                    className="mt-2.5 py-1 px-3.5 rounded-full bg-white text-black font-bold text-xs"
+                  >
+                    + Add School
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="bg-[#0F1013] border border-white/[0.08] rounded-[18px] p-4 divide-y divide-white/[0.06]">
+                {education.map((edu, idx) => (
+                  <div key={edu.id || idx} className="py-3 first:pt-0 last:pb-0 flex items-start gap-3.5">
+                    <div className="w-10 h-10 rounded-xl bg-[#17181D] border border-white/[0.08] flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <GraduationCap className="w-5 h-5 text-[#00F2FE]" />
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <h4 className="text-[15px] font-bold text-[#F4F4F6] leading-snug">
+                          {edu.school}
+                        </h4>
+                        {isOwnProfile && (
+                          <button
+                            type="button"
+                            onClick={() => setEditModalOpen(true)}
+                            className="text-[#A1A4B0] hover:text-white p-1"
+                            title="Edit Education"
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                       </div>
-                    )}
-                    {(edu.startYear || edu.endYear) && (
-                      <div className="text-[11px] text-[#A1A4B0] mt-1">
-                        {edu.startYear} {edu.endYear ? `— ${edu.endYear}` : ''}
-                      </div>
-                    )}
+
+                      {(edu.degree || edu.fieldOfStudy) && (
+                        <div className="text-[13px] text-[#A1A4B0] mt-0.5">
+                          {edu.degree}
+                          {edu.degree && edu.fieldOfStudy ? ' in ' : ''}
+                          {edu.fieldOfStudy}
+                        </div>
+                      )}
+
+                      {(edu.startYear || edu.endYear) && (
+                        <div className="text-xs text-[#5E626E] mt-1 font-medium">
+                          {edu.startYear}
+                          {edu.endYear ? ` – ${edu.endYear}` : ''}
+                        </div>
+                      )}
+
+                      {edu.description && (
+                        <p className="text-[12.5px] text-white/70 mt-1.5 leading-relaxed font-normal whitespace-pre-line">
+                          {edu.description}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </section>
         )}
 
-        {/* SKILLS */}
-        {skills.length > 0 && (
+        {/* SKILLS & SUPERPOWERS (Replicated from resume_sections_widget.dart) */}
+        {(skills.length > 0 || isOwnProfile) && (
           <section className="mb-6">
-            <h3 className="text-[11px] font-bold text-[#A1A4B0] tracking-[1.5px] uppercase mb-2.5">
-              SKILLS
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {skills.map((skill, idx) => (
-                <span
-                  key={idx}
-                  className="px-3 py-1.5 rounded-full bg-[#17181D] border border-white/[0.08] text-white/90 text-xs font-medium"
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-[11px] font-bold text-[#A1A4B0] tracking-[1.5px] uppercase">
+                SKILLS & SUPERPOWERS
+              </h3>
+              {isOwnProfile && (
+                <button
+                  type="button"
+                  onClick={() => setEditModalOpen(true)}
+                  className="text-[10px] font-bold text-[#00F2FE] hover:underline flex items-center gap-1 active:scale-95 transition"
                 >
-                  {skill}
-                </span>
-              ))}
+                  <Plus className="w-3 h-3" />
+                  <span>Add Skill</span>
+                </button>
+              )}
             </div>
+
+            {skills.length === 0 ? (
+              <div className="bg-[#0F1013] border border-white/[0.08] rounded-[16px] p-5 text-center">
+                <Sparkles className="w-6 h-6 text-[#5E626E] mx-auto mb-1.5" />
+                <p className="text-xs text-[#A1A4B0]">No skills added yet.</p>
+                {isOwnProfile && (
+                  <button
+                    type="button"
+                    onClick={() => setEditModalOpen(true)}
+                    className="mt-2.5 py-1 px-3.5 rounded-full bg-white text-black font-bold text-xs"
+                  >
+                    + Add Skills
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {skills.map((skill, idx) => (
+                  <span
+                    key={idx}
+                    className="px-3.5 py-1.5 rounded-full bg-[#17181D] border border-white/[0.12] hover:border-white/25 text-white/90 text-[13px] font-semibold transition"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            )}
           </section>
         )}
       </div>
@@ -952,24 +1309,36 @@ export default function ProfileView({ profile }: ProfileViewProps) {
       {/* Floating Bottom Navigation Bar (Centered within mobile frame) */}
       <footer className="fixed bottom-0 inset-x-0 bg-[#000000]/95 backdrop-blur-xl border-t border-[#17181D] py-3 px-4 z-40">
         <div className="max-w-[430px] mx-auto flex items-center gap-2.5">
-          {/* Primary CTA: Stadium White button */}
-          <button
-            onClick={() => setConnectModalOpen(true)}
-            className="flex-1 py-3 px-5 rounded-full bg-white hover:bg-neutral-100 text-black font-bold text-sm tracking-tight shadow-sm active:scale-[0.98] transition flex items-center justify-center gap-2"
-          >
-            <UserPlus className="w-4 h-4 text-black" />
-            <span>Connect on Jana</span>
-          </button>
-
-          {!isOwnProfile && !hasVouched && (
+          {isOwnProfile ? (
             <button
-              onClick={handleVouchClick}
-              className="px-3.5 py-3 rounded-full bg-white/10 hover:bg-white/15 border border-white/20 text-white text-xs font-bold transition flex items-center gap-1.5 active:scale-95 flex-shrink-0"
-              title="Vouch for this user"
+              onClick={() => setEditModalOpen(true)}
+              className="flex-1 py-3 px-5 rounded-full bg-white hover:bg-neutral-100 text-black font-bold text-sm tracking-tight shadow-sm active:scale-[0.98] transition flex items-center justify-center gap-2"
             >
-              <Shield className="w-3.5 h-3.5 text-[#00F2FE]" />
-              <span>Vouch</span>
+              <Pencil className="w-4 h-4 text-black" />
+              <span>Edit Profile Details</span>
             </button>
+          ) : (
+            <>
+              {/* Primary CTA: Stadium White button */}
+              <button
+                onClick={() => setConnectModalOpen(true)}
+                className="flex-1 py-3 px-5 rounded-full bg-white hover:bg-neutral-100 text-black font-bold text-sm tracking-tight shadow-sm active:scale-[0.98] transition flex items-center justify-center gap-2"
+              >
+                <UserPlus className="w-4 h-4 text-black" />
+                <span>Connect on Jana</span>
+              </button>
+
+              {!hasVouched && (
+                <button
+                  onClick={handleVouchClick}
+                  className="px-3.5 py-3 rounded-full bg-white/10 hover:bg-white/15 border border-white/20 text-white text-xs font-bold transition flex items-center gap-1.5 active:scale-95 flex-shrink-0"
+                  title="Vouch for this user"
+                >
+                  <Shield className="w-3.5 h-3.5 text-[#00F2FE]" />
+                  <span>Vouch</span>
+                </button>
+              )}
+            </>
           )}
 
           <button
@@ -1101,14 +1470,24 @@ export default function ProfileView({ profile }: ProfileViewProps) {
           isOpen={vouchModalOpen}
           onClose={() => setVouchModalOpen(false)}
           targetProfile={{
-            id: profile.id,
-            name: profile.name,
-            avatar_url: profile.avatar_url,
-            profession: profile.profession,
-            company: profile.company,
+            id: profileState.id,
+            name: profileState.name,
+            avatar_url: profileState.avatar_url,
+            profession: profileState.profession,
+            company: profileState.company,
           }}
           currentUserProfile={currentUser}
           onVouched={handleVouchSubmitted}
+        />
+      )}
+
+      {/* Edit Profile Modal */}
+      {isOwnProfile && (
+        <EditProfileModal
+          isOpen={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          profile={profileState}
+          onSaveSuccess={handleProfileUpdated}
         />
       )}
     </div>
