@@ -191,13 +191,12 @@ export async function deleteUserProfileAccount(profileId: number): Promise<{ suc
 
     if (rpcErr) {
       console.warn('RPC delete_user_account returned error, falling back to direct table deletes:', rpcErr);
-      // Fallback: manually delete referencing tables with NO ACTION
+      // Fallback: manually delete connections & referencing tables
+      await supabase.from('user_connections').delete().or(`user_id_1.eq.${profileId},user_id_2.eq.${profileId}`);
       await supabase.from('network_stats').delete().eq('user_id', profileId);
       await supabase.from('post_seen').delete().eq('viewer_id', profileId);
       await supabase.from('posts').delete().eq('author_id', profileId);
-      await supabase.from('referral_requests').delete().eq('requester_id', profileId);
-      await supabase.from('referral_requests').delete().eq('target_id', profileId);
-      await supabase.from('referral_requests').delete().eq('via_user_id', profileId);
+      await supabase.from('referral_requests').delete().or(`requester_id.eq.${profileId},target_id.eq.${profileId},via_user_id.eq.${profileId}`);
 
       const { error: profileErr } = await supabase.from('profiles').delete().eq('id', profileId);
       if (profileErr) {
