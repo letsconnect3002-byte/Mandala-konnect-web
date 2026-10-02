@@ -714,9 +714,9 @@ export default function ProfileView({ profile }: ProfileViewProps) {
       )}
 
       {/* Centered Mobile Screen Container */}
-      <div className="max-w-[430px] w-full mx-auto min-h-screen px-4 pt-5 pb-28 sm:border-x sm:border-white/[0.06] bg-[#000000] relative">
+      <div className="max-w-[430px] w-full mx-auto min-h-screen px-3.5 sm:px-4 pt-4 sm:pt-5 pb-[calc(7.5rem+env(safe-area-inset-bottom,0px))] sm:border-x sm:border-white/[0.06] bg-[#000000] relative">
         {/* Header Capsule matching _buildSkeletonHeader() */}
-        <header className="bg-[#0F1013] border border-white/10 rounded-[30px] py-2 px-3.5 flex items-center justify-between shadow-lg mb-6">
+        <header className="bg-[#0F1013] border border-white/10 rounded-[30px] py-1.5 sm:py-2 px-3 sm:px-3.5 flex items-center justify-between shadow-lg mb-5 sm:mb-6">
           <button
             type="button"
             onClick={handleBack}
@@ -726,9 +726,9 @@ export default function ProfileView({ profile }: ProfileViewProps) {
             <ChevronLeft className="w-4 h-4 ml-[-1px]" />
           </button>
           
-          <div className="text-center flex-1 mx-2 min-w-0">
-            <h1 className="text-[17px] font-bold text-white tracking-tight leading-snug truncate">Profile Space</h1>
-            <p className="text-[11px] text-[#A1A4B0] font-normal leading-snug">Digital Profile</p>
+          <div className="text-center flex-1 mx-1.5 sm:mx-2 min-w-0">
+            <h1 className="text-[15px] sm:text-[17px] font-bold text-white tracking-tight leading-snug truncate">Profile Space</h1>
+            <p className="text-[10px] sm:text-[11px] text-[#A1A4B0] font-normal leading-snug truncate">Digital Profile</p>
           </div>
 
           <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -737,7 +737,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
                 <button
                   type="button"
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-1.5 py-1 px-2.5 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-white text-xs transition"
+                  className="flex items-center gap-1.5 py-1 px-2 sm:px-2.5 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-white text-xs transition"
                 >
                   <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-[#0064E0] to-[#00F2FE] flex items-center justify-center text-[10px] font-bold text-white">
                     {currentUser.name?.charAt(0).toUpperCase() || '?'}
@@ -798,9 +798,9 @@ export default function ProfileView({ profile }: ProfileViewProps) {
         </header>
 
         {/* Identity Section (Avatar, Name, Vouch / Edit Profile) */}
-        <section className="flex items-center gap-4 mb-6">
+        <section className="flex items-center gap-3.5 sm:gap-4 mb-5 sm:mb-6">
           {/* Avatar with Pink-Cyan Gradient Border */}
-          <div className="w-[72px] h-[72px] rounded-full p-[3px] bg-gradient-to-br from-[#EC4899] to-[#00F2FE] flex-shrink-0 shadow-md">
+          <div className="w-[66px] h-[66px] sm:w-[72px] sm:h-[72px] rounded-full p-[2.5px] sm:p-[3px] bg-gradient-to-br from-[#EC4899] to-[#00F2FE] flex-shrink-0 shadow-md">
             <div className="w-full h-full rounded-full overflow-hidden bg-[#1E1F32] flex items-center justify-center">
               {avatarUrl && avatarUrl.startsWith('http') ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -813,21 +813,21 @@ export default function ProfileView({ profile }: ProfileViewProps) {
                   }}
                 />
               ) : (
-                <span className="text-2xl font-bold text-white tracking-wide">{initial}</span>
+                <span className="text-xl sm:text-2xl font-bold text-white tracking-wide">{initial}</span>
               )}
             </div>
           </div>
 
           {/* Name & Actions */}
           <div className="flex-1 min-w-0">
-            <h2 className="text-[18px] font-black text-white tracking-[0.5px] truncate leading-snug">{name}</h2>
+            <h2 className="text-[17px] sm:text-[18px] font-black text-white tracking-[0.5px] truncate leading-snug">{name}</h2>
             {company && (
               <p className="text-xs text-[#A1A4B0] truncate mt-0.5">{company}</p>
             )}
             
-            <div className="flex items-center gap-2 mt-2">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-2">
               {isOwnProfile ? (
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                   <button
                     type="button"
                     onClick={() => setEditModalOpen(true)}
@@ -1476,14 +1476,17 @@ export default function ProfileView({ profile }: ProfileViewProps) {
       </div>
 
       {/* Floating Bottom Navigation Bar (Centered within mobile frame) */}
-      <footer className="fixed bottom-0 inset-x-0 bg-[#000000]/95 backdrop-blur-xl border-t border-[#17181D] py-3 px-4 z-40">
-        <div className="max-w-[430px] mx-auto flex items-center gap-2.5">
+      <footer
+        className="fixed bottom-0 inset-x-0 bg-[#000000]/95 backdrop-blur-xl border-t border-[#17181D] pt-2.5 sm:pt-3 px-3.5 sm:px-4 z-40 transition-all"
+        style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0.75rem))' }}
+      >
+        <div className="max-w-[430px] mx-auto flex items-center gap-2 sm:gap-2.5">
           {isOwnProfile ? (
             <button
               onClick={() => setEditModalOpen(true)}
-              className="flex-1 py-3 px-5 rounded-full bg-white hover:bg-neutral-100 text-black font-bold text-sm tracking-tight shadow-sm active:scale-[0.98] transition flex items-center justify-center gap-2"
+              className="flex-1 py-3 px-4 sm:px-5 rounded-full bg-white hover:bg-neutral-100 text-black font-bold text-xs sm:text-sm tracking-tight shadow-sm active:scale-[0.98] transition flex items-center justify-center gap-2"
             >
-              <Pencil className="w-4 h-4 text-black" />
+              <Pencil className="w-4 h-4 text-black flex-shrink-0" />
               <span>Edit Profile Details</span>
             </button>
           ) : (
@@ -1491,16 +1494,16 @@ export default function ProfileView({ profile }: ProfileViewProps) {
               {/* Primary CTA: Stadium White button */}
               <button
                 onClick={() => setConnectModalOpen(true)}
-                className="flex-1 py-3 px-5 rounded-full bg-white hover:bg-neutral-100 text-black font-bold text-sm tracking-tight shadow-sm active:scale-[0.98] transition flex items-center justify-center gap-2"
+                className="flex-1 py-3 px-3 sm:px-5 rounded-full bg-white hover:bg-neutral-100 text-black font-bold text-xs sm:text-sm tracking-tight shadow-sm active:scale-[0.98] transition flex items-center justify-center gap-1.5 sm:gap-2 truncate"
               >
-                <UserPlus className="w-4 h-4 text-black" />
-                <span>Connect on Jana</span>
+                <UserPlus className="w-4 h-4 text-black flex-shrink-0" />
+                <span className="truncate">Connect on Jana</span>
               </button>
 
               {!hasVouched && (
                 <button
                   onClick={handleVouchClick}
-                  className="px-3.5 py-3 rounded-full bg-white/10 hover:bg-white/15 border border-white/20 text-white text-xs font-bold transition flex items-center gap-1.5 active:scale-95 flex-shrink-0"
+                  className="px-3 sm:px-3.5 py-3 rounded-full bg-white/10 hover:bg-white/15 border border-white/20 text-white text-xs font-bold transition flex items-center gap-1 active:scale-95 flex-shrink-0"
                   title="Vouch for this user"
                 >
                   <Shield className="w-3.5 h-3.5 text-[#00F2FE]" />
@@ -1512,7 +1515,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
 
           <button
             onClick={() => copyToClipboard(currentUrl, 'Profile Link')}
-            className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 active:scale-95 transition flex items-center justify-center text-white flex-shrink-0"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 active:scale-95 transition flex items-center justify-center text-white flex-shrink-0"
             title="Share Profile"
           >
             <Copy className="w-4 h-4" />
@@ -1523,14 +1526,17 @@ export default function ProfileView({ profile }: ProfileViewProps) {
       {/* Social Action Sheet / Modal (Matching Flutter _showSocialActionSheet) */}
       {socialModal && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-[#0F1013] border border-white/10 rounded-t-[24px] sm:rounded-2xl p-6 w-full max-w-[420px] shadow-2xl relative animate-in slide-in-from-bottom-8">
+          <div
+            className="bg-[#0F1013] border border-white/10 rounded-t-[28px] sm:rounded-2xl p-5 sm:p-6 w-full max-w-[420px] shadow-2xl relative animate-in slide-in-from-bottom-8"
+            style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom, 1.5rem))' }}
+          >
             <button
               onClick={() => setSocialModal(null)}
               className="absolute top-4 right-4 text-white/50 hover:text-white p-1"
             >
               <CloseIcon className="w-5 h-5" />
             </button>
-            <div className="w-9 h-1 rounded-full bg-white/20 mx-auto mb-5 sm:hidden" />
+            <div className="w-9 h-1 rounded-full bg-white/20 mx-auto mb-4 sm:hidden" />
 
             <div className="flex items-center gap-3.5 mb-5">
               <div className="w-11 h-11 rounded-full bg-[#00F2FE]/10 flex items-center justify-center text-[#00F2FE]">
@@ -1580,7 +1586,10 @@ export default function ProfileView({ profile }: ProfileViewProps) {
       {/* Connect on Jana Modal */}
       {connectModalOpen && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-[#0F1013] border border-white/10 rounded-t-[24px] sm:rounded-2xl p-6 w-full max-w-[420px] shadow-2xl relative text-center animate-in slide-in-from-bottom-8">
+          <div
+            className="bg-[#0F1013] border border-white/10 rounded-t-[28px] sm:rounded-2xl p-5 sm:p-6 w-full max-w-[420px] shadow-2xl relative text-center animate-in slide-in-from-bottom-8 max-h-[92vh] overflow-y-auto"
+            style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom, 1.5rem))' }}
+          >
             <button
               onClick={() => setConnectModalOpen(false)}
               className="absolute top-4 right-4 text-white/50 hover:text-white p-1"

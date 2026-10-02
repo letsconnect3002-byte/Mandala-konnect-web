@@ -62,15 +62,19 @@ export default function DeleteAccountModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
       <div
-        className="w-full max-w-md bg-[#0F1013] border border-red-500/20 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col"
+        className="w-full max-w-md bg-[#0F1013] border border-red-500/20 rounded-t-[28px] sm:rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-y-auto"
+        style={{ paddingBottom: 'max(1.25rem, env(safe-area-inset-bottom, 1.25rem))' }}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Mobile handle indicator */}
+        <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mt-3 mb-1 sm:hidden flex-shrink-0" />
+
         {/* Modal Header */}
-        <div className="p-5 border-b border-white/[0.08] flex items-center justify-between">
+        <div className="p-4 sm:p-5 border-b border-white/[0.08] flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500">
+            <div className="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 flex-shrink-0">
               <Trash2 className="w-4 h-4" />
             </div>
             <h2 className="text-base font-bold text-white tracking-wide">

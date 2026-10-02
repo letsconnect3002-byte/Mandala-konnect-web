@@ -353,7 +353,10 @@ export default function AuthModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-[#0F1013] border border-white/[0.10] rounded-t-[28px] sm:rounded-[28px] p-6 sm:p-7 w-full max-w-md shadow-2xl relative animate-in slide-in-from-bottom-6 max-h-[92vh] overflow-y-auto">
+      <div
+        className="bg-[#0F1013] border border-white/[0.10] rounded-t-[28px] sm:rounded-[28px] p-5 sm:p-7 w-full max-w-md shadow-2xl relative animate-in slide-in-from-bottom-6 max-h-[90vh] overflow-y-auto overscroll-contain"
+        style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom, 1.5rem))' }}
+      >
         {/* Close Button */}
         <button
           onClick={onClose}

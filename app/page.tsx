@@ -47,7 +47,7 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-44 pb-32 px-6 overflow-hidden min-h-[92vh] flex flex-col justify-between items-center w-full z-10">
+      <section className="relative pt-28 sm:pt-44 pb-20 sm:pb-32 px-4 sm:px-6 overflow-hidden min-h-[90vh] flex flex-col justify-between items-center w-full z-10">
         {/* Background Gradients */}
         <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden bg-spotify-black">
           <div className="absolute -top-[10%] -left-[10%] w-[50%] h-[60%] bg-[#051b40] rounded-full blur-[120px] opacity-90" />
@@ -59,30 +59,30 @@ export default function Home() {
         </div>
 
         {/* Content Box */}
-        <div className="text-center space-y-9 max-w-5xl mx-auto z-10 relative">
+        <div className="text-center space-y-6 sm:space-y-9 max-w-5xl mx-auto z-10 relative">
           {/* Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-xs text-white/80 font-medium tracking-wider uppercase">
+          <div className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-[11px] sm:text-xs text-white/80 font-medium tracking-wider uppercase">
             Focus on who matters.
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-4xl sm:text-6xl md:text-8xl font-normal leading-[1.1] text-[#E2F1FF] tracking-tight max-w-4xl mx-auto">
+          <h1 className="text-3xl sm:text-6xl md:text-8xl font-normal leading-[1.12] text-[#E2F1FF] tracking-tight max-w-4xl mx-auto break-words">
             Life got loud. <br />
             <span className="italic font-light tracking-wide text-white">Make it quiet again.</span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base md:text-lg text-spotify-light-gray max-w-2xl mx-auto leading-relaxed font-light tracking-wide">
+          <p className="text-sm sm:text-base md:text-lg text-spotify-light-gray max-w-2xl mx-auto leading-relaxed font-light tracking-wide px-2 sm:px-0">
             You already know who deserves your time. Jana is the only space that keeps them close and everything else out. No feeds. No algorithms. No strangers. Just the people you chose, on purpose.
           </p>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center pt-2 sm:pt-4 w-full px-2 sm:px-0">
             <a
               href="https://play.google.com/store/apps/details?id=com.india.jana"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto px-7 py-3.5 bg-white/5 border border-white/10 hover:border-spotify-green/40 text-white hover:text-spotify-green font-bold rounded-full backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-black/10"
+              className="w-full sm:w-auto px-6 sm:px-7 py-3 sm:py-3.5 bg-white/5 border border-white/10 hover:border-spotify-green/40 text-white hover:text-spotify-green font-bold text-sm rounded-full backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-black/10"
             >
               <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                 <path d="M3.609 2.056A1.996 1.996 0 0 0 3 3.563v16.874c0 .59.26 1.127.674 1.503l.06.054L15.02 12 3.67 2l-.061.056zM18.064 9.87l-3.037 3.036 3.038 3.038 4.269-2.436c1.171-.667 1.171-2.507 0-3.175l-4.27-2.463zM4.774 2.89l10.21 10.21 3.08-3.08L4.774 2.89zm0 18.22l13.29-7.574-3.08-3.08-10.21 10.654z" />

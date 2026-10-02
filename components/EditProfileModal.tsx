@@ -268,14 +268,20 @@ export default function EditProfileModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-      <div className="bg-[#0F1013] border border-white/10 rounded-t-[28px] sm:rounded-2xl w-full max-w-lg shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[85vh] animate-in slide-in-from-bottom-8">
+      <div
+        className="bg-[#0F1013] border border-white/10 rounded-t-[28px] sm:rounded-2xl w-full max-w-lg shadow-2xl flex flex-col max-h-[90vh] sm:max-h-[85vh] animate-in slide-in-from-bottom-8 overflow-hidden"
+        style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0.75rem))' }}
+      >
+        {/* Mobile handle indicator */}
+        <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mt-2.5 mb-0.5 sm:hidden flex-shrink-0" />
+
         {/* Top Header */}
-        <div className="p-4 sm:p-5 border-b border-white/[0.08] flex items-center justify-between flex-shrink-0">
-          <div className="flex items-center gap-3">
+        <div className="p-3.5 sm:p-5 border-b border-white/[0.08] flex items-center justify-between flex-shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3">
             <button
               onClick={onClose}
               disabled={saving}
-              className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/15 active:scale-95 transition flex items-center justify-center text-white"
+              className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/15 active:scale-95 transition flex items-center justify-center text-white flex-shrink-0"
             >
               <X className="w-4 h-4" />
             </button>
