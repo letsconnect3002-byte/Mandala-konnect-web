@@ -13,7 +13,11 @@ export interface UserProfileSummary {
   email?: string | null;
   profession?: string | null;
   company?: string | null;
+  phone_number?: string | null;
   avatar_url?: string | null;
+  linkedin?: string | null;
+  twitter?: string | null;
+  instagram?: string | null;
 }
 
 /**
@@ -88,7 +92,7 @@ export async function ensureUserProfile(
       // 1. Check if profile already exists for this owner_id
       const { data: existing, error: fetchErr } = await supabase
         .from('profiles')
-        .select('id, owner_id, name, handle, email, profession, company, avatar_url')
+        .select('id, owner_id, name, handle, email, profession, company, phone_number, avatar_url, linkedin, twitter, instagram')
         .eq('owner_id', user.id)
         .eq('is_my_profile', true)
         .limit(1)
@@ -138,14 +142,14 @@ export async function ensureUserProfile(
           show_profile_to_connections: true,
           field_assignments: defaultFieldAssignments,
         })
-        .select('id, owner_id, name, handle, email, profession, company, avatar_url')
+        .select('id, owner_id, name, handle, email, profession, company, phone_number, avatar_url, linkedin, twitter, instagram')
         .single();
 
       if (insertErr) {
         // If insert failed due to concurrent execution or conflict, try fetching again
         const { data: retryProfile } = await supabase
           .from('profiles')
-          .select('id, owner_id, name, handle, email, profession, company, avatar_url')
+          .select('id, owner_id, name, handle, email, profession, company, phone_number, avatar_url, linkedin, twitter, instagram')
           .eq('owner_id', user.id)
           .eq('is_my_profile', true)
           .limit(1)

@@ -30,6 +30,7 @@ import AuthModal from '@/components/AuthModal';
 import VouchModal from '@/components/VouchModal';
 import EditProfileModal from '@/components/EditProfileModal';
 import DeleteAccountModal from '@/components/DeleteAccountModal';
+import CompleteProfileModal from '@/components/CompleteProfileModal';
 
 export interface VouchItem {
   id: string;
@@ -276,6 +277,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
   const [currentUser, setCurrentUser] = useState<UserProfileSummary | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authPrompt, setAuthPrompt] = useState('Sign in to vouch for this profile');
+  const [completeProfileModalOpen, setCompleteProfileModalOpen] = useState(false);
   const [vouchModalOpen, setVouchModalOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [hasVouched, setHasVouched] = useState(false);
@@ -310,6 +312,10 @@ export default function ProfileView({ profile }: ProfileViewProps) {
     }
     if (vouchModalOpen) {
       setVouchModalOpen(false);
+      return;
+    }
+    if (completeProfileModalOpen) {
+      setCompleteProfileModalOpen(false);
       return;
     }
     if (authModalOpen) {
@@ -411,6 +417,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
         if (socialModal) setSocialModal(null);
         if (connectModalOpen) setConnectModalOpen(false);
         if (vouchModalOpen) setVouchModalOpen(false);
+        if (completeProfileModalOpen) setCompleteProfileModalOpen(false);
         if (authModalOpen) setAuthModalOpen(false);
         if (userMenuOpen) setUserMenuOpen(false);
       }
@@ -418,7 +425,22 @@ export default function ProfileView({ profile }: ProfileViewProps) {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [deleteModalOpen, editModalOpen, socialModal, connectModalOpen, vouchModalOpen, authModalOpen, userMenuOpen]);
+  }, [deleteModalOpen, editModalOpen, socialModal, connectModalOpen, vouchModalOpen, completeProfileModalOpen, authModalOpen, userMenuOpen]);
+
+  const isProfileDetailsIncomplete = (user: UserProfileSummary | null) => {
+    if (!user) return true;
+    if (typeof window !== 'undefined') {
+      const isDone = localStorage.getItem(`profile_setup_done_${user.id}`);
+      if (isDone === 'true') return false;
+    }
+    // Name is required
+    if (!user.name || !user.name.trim() || user.name.trim().toLowerCase() === 'user') return true;
+    // Profession is required and shouldn't be default placeholder
+    if (!user.profession || !user.profession.trim() || user.profession.trim().toLowerCase() === 'member') return true;
+    // At least company or phone number should be provided
+    if (!user.company?.trim() && !user.phone_number?.trim()) return true;
+    return false;
+  };
 
   const handleVouchClick = () => {
     if (!currentUser) {
@@ -437,6 +459,12 @@ export default function ProfileView({ profile }: ProfileViewProps) {
       return;
     }
 
+    // Require user to complete profile details (excluding experience, education, bio) before vouching
+    if (isProfileDetailsIncomplete(currentUser)) {
+      setCompleteProfileModalOpen(true);
+      return;
+    }
+
     setVouchModalOpen(true);
   };
 
@@ -444,6 +472,26 @@ export default function ProfileView({ profile }: ProfileViewProps) {
     setCurrentUser(newProfile);
     showToast(`Signed in as ${newProfile.name}`);
     if (newProfile.id !== profileState.id && !hasVouched) {
+      if (isProfileDetailsIncomplete(newProfile)) {
+        setTimeout(() => {
+          setCompleteProfileModalOpen(true);
+        }, 350);
+      } else {
+        setTimeout(() => {
+          setVouchModalOpen(true);
+        }, 350);
+      }
+    }
+  };
+
+  const handleProfileSetupCompleted = (updatedProfile: UserProfileSummary) => {
+    setCurrentUser(updatedProfile);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`profile_setup_done_${updatedProfile.id}`, 'true');
+    }
+    setCompleteProfileModalOpen(false);
+    showToast('Profile details saved!');
+    if (updatedProfile.id !== profileState.id && !hasVouched) {
       setTimeout(() => {
         setVouchModalOpen(true);
       }, 350);
@@ -1583,7 +1631,19 @@ export default function ProfileView({ profile }: ProfileViewProps) {
         onClose={() => setAuthModalOpen(false)}
         onSuccess={handleAuthSuccess}
         actionPrompt={authPrompt}
+        targetProfileName={profileState.name}
       />
+
+      {/* Complete Profile Details Modal (Before Vouching) */}
+      {currentUser && (
+        <CompleteProfileModal
+          isOpen={completeProfileModalOpen}
+          onClose={() => setCompleteProfileModalOpen(false)}
+          currentUserProfile={currentUser}
+          targetProfileName={profileState.name}
+          onCompleted={handleProfileSetupCompleted}
+        />
+      )}
 
       {/* Vouch Modal */}
       {currentUser && (
