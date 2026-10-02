@@ -18,6 +18,7 @@ export interface UserProfileSummary {
   linkedin?: string | null;
   twitter?: string | null;
   instagram?: string | null;
+  quick_setup_complete?: boolean | null;
 }
 
 /**
@@ -92,7 +93,7 @@ export async function ensureUserProfile(
       // 1. Check if profile already exists for this owner_id
       const { data: existing, error: fetchErr } = await supabase
         .from('profiles')
-        .select('id, owner_id, name, handle, email, profession, company, phone_number, avatar_url, linkedin, twitter, instagram')
+        .select('id, owner_id, name, handle, email, profession, company, phone_number, avatar_url, linkedin, twitter, instagram, quick_setup_complete')
         .eq('owner_id', user.id)
         .eq('is_my_profile', true)
         .limit(1)
@@ -142,14 +143,14 @@ export async function ensureUserProfile(
           show_profile_to_connections: true,
           field_assignments: defaultFieldAssignments,
         })
-        .select('id, owner_id, name, handle, email, profession, company, phone_number, avatar_url, linkedin, twitter, instagram')
+        .select('id, owner_id, name, handle, email, profession, company, phone_number, avatar_url, linkedin, twitter, instagram, quick_setup_complete')
         .single();
 
       if (insertErr) {
         // If insert failed due to concurrent execution or conflict, try fetching again
         const { data: retryProfile } = await supabase
           .from('profiles')
-          .select('id, owner_id, name, handle, email, profession, company, phone_number, avatar_url, linkedin, twitter, instagram')
+          .select('id, owner_id, name, handle, email, profession, company, phone_number, avatar_url, linkedin, twitter, instagram, quick_setup_complete')
           .eq('owner_id', user.id)
           .eq('is_my_profile', true)
           .limit(1)

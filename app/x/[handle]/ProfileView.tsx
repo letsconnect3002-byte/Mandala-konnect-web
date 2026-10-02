@@ -429,16 +429,25 @@ export default function ProfileView({ profile }: ProfileViewProps) {
 
   const isProfileDetailsIncomplete = (user: UserProfileSummary | null) => {
     if (!user) return true;
+
+    // 1. Direct persistent Supabase database sync (synced with mobile app)
+    if (user.quick_setup_complete === true) return false;
+
+    // 2. Local storage session fallback
     if (typeof window !== 'undefined') {
       const isDone = localStorage.getItem(`profile_setup_done_${user.id}`);
       if (isDone === 'true') return false;
     }
-    // Name is required
+
+    // 3. Name is required
     if (!user.name || !user.name.trim() || user.name.trim().toLowerCase() === 'user') return true;
-    // Profession is required and shouldn't be default placeholder
+
+    // 4. Profession is required and shouldn't be default placeholder
     if (!user.profession || !user.profession.trim() || user.profession.trim().toLowerCase() === 'member') return true;
-    // At least company or phone number should be provided
+
+    // 5. At least company or phone number should be provided
     if (!user.company?.trim() && !user.phone_number?.trim()) return true;
+
     return false;
   };
 
@@ -485,13 +494,14 @@ export default function ProfileView({ profile }: ProfileViewProps) {
   };
 
   const handleProfileSetupCompleted = (updatedProfile: UserProfileSummary) => {
-    setCurrentUser(updatedProfile);
+    const profileWithSetup = { ...updatedProfile, quick_setup_complete: true };
+    setCurrentUser(profileWithSetup);
     if (typeof window !== 'undefined') {
-      localStorage.setItem(`profile_setup_done_${updatedProfile.id}`, 'true');
+      localStorage.setItem(`profile_setup_done_${profileWithSetup.id}`, 'true');
     }
     setCompleteProfileModalOpen(false);
     showToast('Profile details saved!');
-    if (updatedProfile.id !== profileState.id && !hasVouched) {
+    if (profileWithSetup.id !== profileState.id && !hasVouched) {
       setTimeout(() => {
         setVouchModalOpen(true);
       }, 350);

@@ -239,6 +239,7 @@ export default function EditProfileModal({
         experience: experienceDb,
         education: educationDb,
         skills: skillsDb,
+        quick_setup_complete: true,
       };
 
       const { error } = await supabase

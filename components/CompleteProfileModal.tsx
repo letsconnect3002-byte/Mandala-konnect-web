@@ -136,13 +136,14 @@ export default function CompleteProfileModal({
         linkedin: linkedin.trim() || null,
         twitter: twitter.trim() || null,
         instagram: instagram.trim() || null,
+        quick_setup_complete: true,
       };
 
       const { data, error } = await supabase
         .from('profiles')
         .update(updatePayload)
         .eq('id', currentUserProfile.id)
-        .select('id, owner_id, name, handle, email, profession, company, phone_number, avatar_url, linkedin, twitter, instagram')
+        .select('id, owner_id, name, handle, email, profession, company, phone_number, avatar_url, linkedin, twitter, instagram, quick_setup_complete')
         .single();
 
       if (error) throw error;
@@ -150,6 +151,7 @@ export default function CompleteProfileModal({
       const updated = (data as UserProfileSummary) || {
         ...currentUserProfile,
         ...updatePayload,
+        quick_setup_complete: true,
       };
 
       onCompleted(updated);

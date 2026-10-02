@@ -321,13 +321,14 @@ export default function AuthModal({
         linkedin: linkedin.trim() || null,
         twitter: twitter.trim() || null,
         instagram: instagram.trim() || null,
+        quick_setup_complete: true,
       };
 
       const { data, error } = await supabase
         .from('profiles')
         .update(updatePayload)
         .eq('id', createdProfile.id)
-        .select('id, owner_id, name, handle, email, profession, company, phone_number, avatar_url, linkedin, twitter, instagram')
+        .select('id, owner_id, name, handle, email, profession, company, phone_number, avatar_url, linkedin, twitter, instagram, quick_setup_complete')
         .single();
 
       if (error) throw error;
@@ -335,6 +336,7 @@ export default function AuthModal({
       const updated = (data as UserProfileSummary) || {
         ...createdProfile,
         ...updatePayload,
+        quick_setup_complete: true,
       };
 
       if (typeof window !== 'undefined') {
