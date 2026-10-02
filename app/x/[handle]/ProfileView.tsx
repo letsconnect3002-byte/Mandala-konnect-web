@@ -284,12 +284,90 @@ export default function ProfileView({ profile }: ProfileViewProps) {
   const [, setMyVouch] = useState<VouchItem | null>(null);
   const [vouchesList, setVouchesList] = useState<VouchItem[]>(profile.vouches || []);
   const [vouchCount, setVouchCount] = useState<number>(profile.vouchCount ?? (profile.vouches?.length ?? 0));
+  const [showAppBanner, setShowAppBanner] = useState(true);
 
   useEffect(() => {
     setProfileState(profile);
     setVouchesList(profile.vouches || []);
     setVouchCount(profile.vouchCount ?? (profile.vouches?.length ?? 0));
   }, [profile]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (sessionStorage.getItem('dismiss_jana_app_banner') === 'true') {
+        setShowAppBanner(false);
+      }
+    }
+  }, []);
+
+  const openInApp = () => {
+    if (typeof window === 'undefined') return;
+
+    const userAgent = navigator.userAgent || navigator.vendor || '';
+    const isAndroid = /android/i.test(userAgent);
+    const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !('MSStream' in window);
+
+    const handleOrId = profileState.handle || profileState.id;
+    const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.india.jana';
+    const appStoreUrl = 'https://apps.apple.com/us/app/jana-mandala/id6785388442';
+
+    if (isAndroid) {
+      // Android Intent scheme: opens Jana app directly if installed, falls back to Google Play Store
+      const intentUrl = `intent://x/${handleOrId}#Intent;scheme=jana;package=com.india.jana;S.browser_fallback_url=${encodeURIComponent(playStoreUrl)};end`;
+      window.location.href = intentUrl;
+      return;
+    }
+
+    if (isIOS) {
+      // iOS: try custom scheme, fallback to App Store if app not installed
+      const start = Date.now();
+      window.location.href = `jana://x/${handleOrId}`;
+
+      setTimeout(() => {
+        if (Date.now() - start < 2000 && document.hasFocus()) {
+          window.location.href = `mandala://x/${handleOrId}`;
+          setTimeout(() => {
+            if (Date.now() - start < 3500 && document.hasFocus()) {
+              window.location.href = appStoreUrl;
+            }
+          }, 1000);
+        }
+      }, 1200);
+      return;
+    }
+
+    // On Desktop, trigger the Connect modal with QR code & Store links
+    setConnectModalOpen(true);
+  };
+
+  // Attempt automatic deep link navigation on mobile mount if app is installed
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const userAgent = navigator.userAgent || navigator.vendor || '';
+    const isMobile = /android|iPad|iPhone|iPod/i.test(userAgent);
+    if (!isMobile) return;
+
+    const redirectKey = `jana_auto_redirect_${profileState.id}`;
+    const alreadyAttempted = sessionStorage.getItem(redirectKey);
+    if (!alreadyAttempted) {
+      sessionStorage.setItem(redirectKey, 'true');
+
+      const handleOrId = profileState.handle || profileState.id;
+      if (/android/i.test(userAgent)) {
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = `intent://x/${handleOrId}#Intent;scheme=jana;package=com.india.jana;end`;
+        document.body.appendChild(iframe);
+        setTimeout(() => iframe.remove(), 2000);
+      } else if (/iPad|iPhone|iPod/.test(userAgent)) {
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = `jana://x/${handleOrId}`;
+        document.body.appendChild(iframe);
+        setTimeout(() => iframe.remove(), 2000);
+      }
+    }
+  }, [profileState.id, profileState.handle]);
 
   const handleBack = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
@@ -725,6 +803,50 @@ export default function ProfileView({ profile }: ProfileViewProps) {
 
       {/* Centered Mobile Screen Container */}
       <div className="max-w-[430px] w-full mx-auto min-h-screen px-3.5 sm:px-4 pt-4 sm:pt-5 pb-[calc(7.5rem+env(safe-area-inset-bottom,0px))] sm:border-x sm:border-white/[0.06] bg-[#000000] relative">
+        {/* Smart App Banner for mobile & web app redirection */}
+        {showAppBanner && (
+          <div className="bg-[#17181D]/95 border border-white/10 rounded-2xl p-2.5 mb-3.5 flex items-center justify-between gap-2 shadow-xl backdrop-blur-md animate-in fade-in slide-in-from-top-2">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#0064E0] to-[#00F2FE] p-[1.5px] flex-shrink-0">
+                <div className="w-full h-full rounded-[10px] bg-black flex items-center justify-center overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/Jana.png" alt="Jana" className="w-5 h-5 object-contain" />
+                </div>
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-white truncate">Open in Jana</span>
+                  <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-white/10 text-[#00F2FE] font-semibold">App</span>
+                </div>
+                <p className="text-[10px] text-[#A1A4B0] truncate">View full profile in mobile app</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              <button
+                type="button"
+                onClick={openInApp}
+                className="py-1.5 px-3.5 rounded-full bg-white hover:bg-neutral-100 text-black text-xs font-bold transition shadow-sm active:scale-95 flex items-center gap-1 cursor-pointer"
+              >
+                <ExternalLink className="w-3 h-3 text-black" />
+                <span>Open</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAppBanner(false);
+                  if (typeof window !== 'undefined') {
+                    sessionStorage.setItem('dismiss_jana_app_banner', 'true');
+                  }
+                }}
+                className="p-1 text-white/40 hover:text-white rounded-full transition cursor-pointer"
+                aria-label="Dismiss banner"
+              >
+                <CloseIcon className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Header Capsule matching _buildSkeletonHeader() */}
         <header className="bg-[#0F1013] border border-white/10 rounded-[30px] py-1.5 sm:py-2 px-3 sm:px-3.5 flex items-center justify-between shadow-lg mb-5 sm:mb-6">
           <button
@@ -855,21 +977,43 @@ export default function ProfileView({ profile }: ProfileViewProps) {
                     <Trash2 className="w-3 h-3 text-red-400" />
                     <span>Delete</span>
                   </button>
-                </div>
-              ) : hasVouched ? (
-                <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/[0.08] border border-white/20 text-white/80 text-[10px] font-bold">
-                  <ShieldCheck className="w-3 h-3 text-white/80" />
-                  <span>Vouched</span>
+                  <button
+                    type="button"
+                    onClick={openInApp}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/15 border border-white/20 text-white text-[10px] font-bold active:scale-95 transition cursor-pointer"
+                    title="Open in Jana App"
+                  >
+                    <Smartphone className="w-3 h-3 text-[#00F2FE]" />
+                    <span>Open in App</span>
+                  </button>
                 </div>
               ) : (
-                <button
-                  type="button"
-                  onClick={handleVouchClick}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/15 border border-white/25 text-white text-[10px] font-bold active:scale-95 transition"
-                >
-                  <Shield className="w-3 h-3 text-white" />
-                  <span>Vouch</span>
-                </button>
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                  {hasVouched ? (
+                    <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/[0.08] border border-white/20 text-white/80 text-[10px] font-bold">
+                      <ShieldCheck className="w-3 h-3 text-white/80" />
+                      <span>Vouched</span>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleVouchClick}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/15 border border-white/25 text-white text-[10px] font-bold active:scale-95 transition"
+                    >
+                      <Shield className="w-3 h-3 text-white" />
+                      <span>Vouch</span>
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={openInApp}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/15 border border-white/20 text-white text-[10px] font-bold active:scale-95 transition cursor-pointer"
+                    title="Open in Jana App"
+                  >
+                    <Smartphone className="w-3 h-3 text-[#00F2FE]" />
+                    <span>Open in App</span>
+                  </button>
+                </div>
               )}
             </div>
           </div>
@@ -1503,8 +1647,15 @@ export default function ProfileView({ profile }: ProfileViewProps) {
             <>
               {/* Primary CTA: Stadium White button */}
               <button
-                onClick={() => setConnectModalOpen(true)}
-                className="flex-1 py-3 px-3 sm:px-5 rounded-full bg-white hover:bg-neutral-100 text-black font-bold text-xs sm:text-sm tracking-tight shadow-sm active:scale-[0.98] transition flex items-center justify-center gap-1.5 sm:gap-2 truncate"
+                onClick={() => {
+                  const isMobile = typeof window !== 'undefined' && /android|iPad|iPhone|iPod/i.test(navigator.userAgent);
+                  if (isMobile) {
+                    openInApp();
+                  } else {
+                    setConnectModalOpen(true);
+                  }
+                }}
+                className="flex-1 py-3 px-3 sm:px-5 rounded-full bg-white hover:bg-neutral-100 text-black font-bold text-xs sm:text-sm tracking-tight shadow-sm active:scale-[0.98] transition flex items-center justify-center gap-1.5 sm:gap-2 truncate cursor-pointer"
               >
                 <UserPlus className="w-4 h-4 text-black flex-shrink-0" />
                 <span className="truncate">Connect on Jana</span>
@@ -1614,6 +1765,16 @@ export default function ProfileView({ profile }: ProfileViewProps) {
             <p className="text-xs text-[#A1A4B0] mt-1.5 mb-5 max-w-xs mx-auto leading-relaxed">
               Jana is a sealed, intentional space for your closest circle. Install the app to exchange cards and start a direct conversation.
             </p>
+
+            {/* Direct Open in App Button */}
+            <button
+              type="button"
+              onClick={openInApp}
+              className="w-full py-3 px-4 rounded-xl bg-white hover:bg-neutral-100 text-black font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition active:scale-[0.98] mb-4 cursor-pointer"
+            >
+              <Smartphone className="w-4 h-4 text-black" />
+              <span>Open in Jana App</span>
+            </button>
 
             {/* QR Code */}
             <div className="bg-white p-3 rounded-2xl inline-block mx-auto mb-3 shadow-inner">

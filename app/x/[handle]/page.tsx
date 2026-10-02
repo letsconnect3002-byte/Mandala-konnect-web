@@ -214,6 +214,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       images: avatarUrl ? [avatarUrl] : [],
     },
+    itunes: {
+      appId: '6785388442',
+      appArgument: `jana://x/${profile.handle || profile.id}`,
+    },
   };
 }
 
