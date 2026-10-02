@@ -599,6 +599,20 @@ export default function ProfileView({ profile }: ProfileViewProps) {
       ...prev,
       ...updated,
     }));
+    setCurrentUser((prev) => {
+      if (!prev) return prev;
+      if (prev.id === profileState.id || (profileState.owner_id && prev.owner_id === profileState.owner_id)) {
+        return {
+          ...prev,
+          name: updated.name ?? prev.name,
+          handle: updated.handle ?? prev.handle,
+          avatar_url: updated.avatar_url ?? prev.avatar_url,
+          profession: updated.profession ?? prev.profession,
+          company: updated.company ?? prev.company,
+        };
+      }
+      return prev;
+    });
     showToast('Profile updated successfully!');
     if (updated.handle && updated.handle !== profileState.handle) {
       router.replace(`/x/${updated.handle}`);
@@ -869,16 +883,68 @@ export default function ProfileView({ profile }: ProfileViewProps) {
                 <button
                   type="button"
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-1.5 py-1 px-2 sm:px-2.5 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-white text-xs transition"
+                  className="flex items-center gap-1.5 py-1 px-1.5 sm:px-2 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-white text-xs transition active:scale-95 cursor-pointer"
+                  aria-label="User account menu"
                 >
-                  <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-[#0064E0] to-[#00F2FE] flex items-center justify-center text-[10px] font-bold text-white">
-                    {currentUser.name?.charAt(0).toUpperCase() || '?'}
+                  <div className="w-5 h-5 sm:w-5.5 sm:h-5.5 rounded-full overflow-hidden bg-gradient-to-tr from-[#0064E0] to-[#00F2FE] flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0">
+                    {currentUser.avatar_url && currentUser.avatar_url.trim() ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={currentUser.avatar_url}
+                        alt={currentUser.name || 'User avatar'}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                          if (fallback) fallback.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <span
+                      style={{
+                        display: currentUser.avatar_url && currentUser.avatar_url.trim() ? 'none' : 'flex',
+                      }}
+                      className="w-full h-full items-center justify-center"
+                    >
+                      {currentUser.name?.charAt(0).toUpperCase() || '?'}
+                    </span>
                   </div>
                   <ChevronDown className="w-3 h-3 text-white/50" />
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-44 rounded-xl bg-[#17181D] border border-white/15 shadow-2xl p-1.5 z-50 text-xs animate-in fade-in">
+                  <div className="absolute right-0 mt-2 w-48 rounded-xl bg-[#17181D] border border-white/15 shadow-2xl p-1.5 z-50 text-xs animate-in fade-in">
+                    <div className="px-3 py-2 border-b border-white/10 mb-1 flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full overflow-hidden bg-gradient-to-tr from-[#0064E0] to-[#00F2FE] flex items-center justify-center text-[11px] font-bold text-white flex-shrink-0">
+                        {currentUser.avatar_url && currentUser.avatar_url.trim() ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={currentUser.avatar_url}
+                            alt={currentUser.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                              if (fallback) fallback.style.display = 'flex';
+                            }}
+                          />
+                        ) : null}
+                        <span
+                          style={{
+                            display: currentUser.avatar_url && currentUser.avatar_url.trim() ? 'none' : 'flex',
+                          }}
+                          className="w-full h-full items-center justify-center"
+                        >
+                          {currentUser.name?.charAt(0).toUpperCase() || '?'}
+                        </span>
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-white font-bold truncate leading-tight">{currentUser.name}</p>
+                        {currentUser.handle && (
+                          <p className="text-[#A1A4B0] text-[10px] truncate leading-tight">@{currentUser.handle}</p>
+                        )}
+                      </div>
+                    </div>
                     {isOwnProfile ? (
                       <button
                         type="button"
