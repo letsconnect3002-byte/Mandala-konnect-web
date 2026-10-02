@@ -96,7 +96,7 @@ export default function VouchModal({
   const [selectedRelationship, setSelectedRelationship] = useState<string | null>(null);
   const [selectedIntents, setSelectedIntents] = useState<string[]>([]);
   const [optionalNote, setOptionalNote] = useState('');
-  const [scope, setScope] = useState<'network' | 'global' | 'profile_only'>('network');
+  const [scope, setScope] = useState<'global' | 'network' | 'inner_circle' | 'profile_only'>('network');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -134,7 +134,7 @@ export default function VouchModal({
       }
       const formattedStatement = statementBuffer.length > 0 ? statementBuffer.join(' ') : 'VOUCH';
 
-      const feedScope = selectedRelationship ? scope : 'profile_only';
+      const feedScope = (selectedRelationship || optionalNote.trim()) ? scope : 'profile_only';
 
       const { data: inserted, error: insertError } = await supabase
         .from('user_vouches')
@@ -357,35 +357,41 @@ export default function VouchModal({
             />
           </div>
 
-          {/* SECTION 4: Feed Visibility Scope (when public relationship is selected) */}
-          {selectedRelationship && (
-            <div>
-              <label className="block text-[11px] font-semibold text-[#A1A4B0] mb-1.5">
-                Feed Scope
+          {/* SECTION 4: Feed Visibility Scope */}
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                <Radio className="w-3.5 h-3.5 text-[#A1A4B0]" />
+                <span>Feed Scope</span>
               </label>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { id: 'network', label: 'Network Feed', icon: <Radio className="w-3 h-3" /> },
-                  { id: 'global', label: 'Global Feed', icon: <Globe className="w-3 h-3" /> },
-                  { id: 'profile_only', label: 'Profile Only', icon: <ShieldCheck className="w-3 h-3" /> },
-                ].map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => setScope(item.id as any)}
-                    className={`py-2 px-2 rounded-xl border text-[11px] font-semibold transition flex items-center justify-center gap-1.5 ${
-                      scope === item.id
-                        ? 'bg-white text-black border-white shadow-sm'
-                        : 'bg-[#17181D] border-white/[0.08] text-[#A1A4B0] hover:text-white'
-                    }`}
-                  >
-                    {item.icon}
-                    <span>{item.label}</span>
-                  </button>
-                ))}
-              </div>
+              <span className="text-[10px] text-[#A1A4B0]">Audience visibility</span>
             </div>
-          )}
+            <p className="text-[11px] text-[#5E626E] mb-2.5">
+              Choose which feed this vouch appears in.
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {[
+                { id: 'global', label: 'Global', icon: <Globe className="w-3.5 h-3.5" /> },
+                { id: 'network', label: 'Network', icon: <Radio className="w-3.5 h-3.5" /> },
+                { id: 'inner_circle', label: 'Inner Circle', icon: <Sparkles className="w-3.5 h-3.5" /> },
+                { id: 'profile_only', label: 'Profile Only', icon: <ShieldCheck className="w-3.5 h-3.5" /> },
+              ].map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setScope(item.id as any)}
+                  className={`py-2 px-2 rounded-xl border text-[11px] font-semibold transition flex items-center justify-center gap-1.5 ${
+                    scope === item.id
+                      ? 'bg-white text-black border-white shadow-sm'
+                      : 'bg-[#17181D] border-white/[0.08] text-[#A1A4B0] hover:text-white'
+                  }`}
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
 
           {/* Voucher Attribution Footer */}
           <div className="p-2.5 rounded-xl bg-[#17181D] border border-white/[0.08] flex items-center justify-between text-[11px] text-[#A1A4B0]">
