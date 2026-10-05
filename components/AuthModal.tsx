@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase, ensureUserProfile, UserProfileSummary } from '@/lib/supabase';
+import { getFriendlyErrorMessage } from '@/lib/errorHandler';
 import {
   X,
   Mail,
@@ -18,7 +19,9 @@ import {
   CheckCircle2,
   Camera,
   Upload,
-  Link as LinkIcon
+  Link as LinkIcon,
+  KeyRound,
+  RotateCcw,
 } from 'lucide-react';
 
 interface AuthModalProps {
@@ -48,7 +51,11 @@ export default function AuthModal({
   actionPrompt = 'Sign in to vouch for this profile',
   targetProfileName,
 }: AuthModalProps) {
-  const [mode, setMode] = useState<'signin' | 'signup' | 'otp' | 'forgot' | 'details'>(initialMode);
+  const [mode, setMode] = useState<
+    'signin' | 'signup' | 'otp' | 'forgot' | 'recovery_otp' | 'reset_password' | 'details'
+  >(initialMode);
+
+  // Profile details state
   const [name, setName] = useState('');
   const [profession, setProfession] = useState('');
   const [company, setCompany] = useState('');
@@ -60,11 +67,25 @@ export default function AuthModal({
   const [twitter, setTwitter] = useState('');
   const [instagram, setInstagram] = useState('');
 
+  // Auth credentials state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // OTP & Recovery state
   const [otpToken, setOtpToken] = useState('');
+  const [recoveryOtp, setRecoveryOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
+
+  // Timer & flags
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [resending, setResending] = useState(false);
 
   const [createdProfile, setCreatedProfile] = useState<UserProfileSummary | null>(null);
   const [loading, setLoading] = useState(false);
@@ -72,6 +93,14 @@ export default function AuthModal({
   const [infoMsg, setInfoMsg] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const interval = setInterval(() => {
+      setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [resendCooldown]);
 
   if (!isOpen) return null;
 
@@ -137,7 +166,7 @@ export default function AuthModal({
       });
       if (error) throw error;
     } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to sign in with Google');
+      setErrorMsg(getFriendlyErrorMessage(err));
       setLoading(false);
     }
   };
@@ -166,7 +195,7 @@ export default function AuthModal({
       onSuccess(profile);
       onClose();
     } catch (err: any) {
-      setErrorMsg(err.message || 'Invalid email or password.');
+      setErrorMsg(getFriendlyErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -179,11 +208,15 @@ export default function AuthModal({
       return;
     }
     if (!email.trim() || !password) {
-      setErrorMsg('Please enter your email and choose a password.');
+      setErrorMsg('Please enter your email and password.');
       return;
     }
     if (password.length < 6) {
       setErrorMsg('Password must be at least 6 characters.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setErrorMsg('Passwords do not match.');
       return;
     }
     if (!acceptTerms) {
@@ -221,11 +254,12 @@ export default function AuthModal({
         }
       }
 
-      // If session is null, email confirmation or OTP is required
+      // If session is null, email confirmation OTP is required
       setMode('otp');
-      setInfoMsg('Account created! Please check your email for the verification code.');
+      setResendCooldown(60);
+      setInfoMsg('Account created! Please check your email for the 6-digit verification code.');
     } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to create account.');
+      setErrorMsg(getFriendlyErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -234,7 +268,7 @@ export default function AuthModal({
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!otpToken.trim()) {
-      setErrorMsg('Please enter the verification code.');
+      setErrorMsg('Please enter the 6-digit verification code.');
       return;
     }
 
@@ -262,9 +296,28 @@ export default function AuthModal({
       setName(profile.name || name.trim());
       setMode('details');
     } catch (err: any) {
-      setErrorMsg(err.message || 'Invalid or expired verification code.');
+      setErrorMsg(getFriendlyErrorMessage(err));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResendSignUpOtp = async () => {
+    if (resendCooldown > 0 || resending) return;
+    try {
+      setResending(true);
+      setErrorMsg(null);
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email.trim(),
+      });
+      if (error) throw error;
+      setResendCooldown(60);
+      setInfoMsg('A new verification code has been sent to your email.');
+    } catch (err: any) {
+      setErrorMsg(getFriendlyErrorMessage(err));
+    } finally {
+      setResending(false);
     }
   };
 
@@ -282,9 +335,96 @@ export default function AuthModal({
         redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/reset-password` : undefined,
       });
       if (error) throw error;
-      setInfoMsg('Password reset link sent! Check your inbox.');
+      setInfoMsg(`Reset code sent! Check your inbox at ${email.trim()}`);
+      setResendCooldown(60);
+      setMode('recovery_otp');
     } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to send reset link.');
+      setErrorMsg(getFriendlyErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyRecoveryOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!recoveryOtp.trim()) {
+      setErrorMsg('Please enter the 6-digit recovery code.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setErrorMsg(null);
+      const { data, error } = await supabase.auth.verifyOtp({
+        email: email.trim(),
+        token: recoveryOtp.trim(),
+        type: 'recovery',
+      });
+
+      if (error) throw error;
+      if (!data.session) throw new Error('Recovery verification failed.');
+
+      setInfoMsg('Code verified! Enter your new password below.');
+      setMode('reset_password');
+    } catch (err: any) {
+      setErrorMsg(getFriendlyErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendRecoveryOtp = async () => {
+    if (resendCooldown > 0 || resending) return;
+    try {
+      setResending(true);
+      setErrorMsg(null);
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/reset-password` : undefined,
+      });
+      if (error) throw error;
+      setResendCooldown(60);
+      setInfoMsg('A new recovery code has been sent to your email.');
+    } catch (err: any) {
+      setErrorMsg(getFriendlyErrorMessage(err));
+    } finally {
+      setResending(false);
+    }
+  };
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword.length < 6) {
+      setErrorMsg('Password must be at least 6 characters.');
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      setErrorMsg('Passwords do not match.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setErrorMsg(null);
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) throw error;
+
+      // Clean recovery session
+      await supabase.auth.signOut();
+
+      // Clear password inputs
+      setPassword('');
+      setConfirmPassword('');
+      setNewPassword('');
+      setConfirmNewPassword('');
+      setRecoveryOtp('');
+
+      setInfoMsg('Password updated successfully! Please sign in with your new password.');
+      setMode('signin');
+    } catch (err: any) {
+      setErrorMsg(getFriendlyErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -328,7 +468,9 @@ export default function AuthModal({
         .from('profiles')
         .update(updatePayload)
         .eq('id', createdProfile.id)
-        .select('id, owner_id, name, handle, email, profession, company, phone_number, avatar_url, linkedin, twitter, instagram, quick_setup_complete')
+        .select(
+          'id, owner_id, name, handle, email, profession, company, phone_number, avatar_url, linkedin, twitter, instagram, quick_setup_complete'
+        )
         .single();
 
       if (error) throw error;
@@ -347,7 +489,7 @@ export default function AuthModal({
       onClose();
     } catch (err: any) {
       console.error('Failed to save profile details:', err);
-      setErrorMsg(err.message || 'Failed to save profile details.');
+      setErrorMsg(getFriendlyErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -374,13 +516,19 @@ export default function AuthModal({
         {/* Header */}
         <div className="text-center mb-6">
           <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/15 p-0.5 mx-auto mb-3 shadow-lg flex items-center justify-center">
-            <ShieldCheck className="w-6 h-6 text-white" />
+            {mode === 'forgot' || mode === 'recovery_otp' || mode === 'reset_password' ? (
+              <KeyRound className="w-6 h-6 text-white" />
+            ) : (
+              <ShieldCheck className="w-6 h-6 text-white" />
+            )}
           </div>
           <h2 className="text-xl font-bold text-white tracking-tight">
             {mode === 'signup' && 'Create Jana Account'}
             {mode === 'signin' && 'Welcome to Jana'}
             {mode === 'otp' && 'Verify Your Email'}
             {mode === 'forgot' && 'Reset Password'}
+            {mode === 'recovery_otp' && 'Enter Recovery Code'}
+            {mode === 'reset_password' && 'Set New Password'}
             {mode === 'details' && 'Complete Profile Details'}
           </h2>
           <p className="text-xs text-[#A1A4B0] mt-1">
@@ -388,6 +536,12 @@ export default function AuthModal({
               ? targetProfileName
                 ? `Fill in your profile details before vouching for ${targetProfileName}`
                 : 'Fill in your profile details before vouching'
+              : mode === 'recovery_otp'
+              ? `Enter the 6-digit recovery code sent to ${email}`
+              : mode === 'reset_password'
+              ? 'Choose a secure password with at least 6 characters'
+              : mode === 'otp'
+              ? `Enter the 6-digit verification code sent to ${email}`
               : actionPrompt}
           </p>
         </div>
@@ -468,7 +622,7 @@ export default function AuthModal({
         {/* Notifications */}
         {errorMsg && (
           <div className="p-3 mb-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs flex items-start gap-2">
-            <span>⚠️</span>
+            <span className="flex-shrink-0 mt-0.5">⚠️</span>
             <span className="flex-1">{errorMsg}</span>
           </div>
         )}
@@ -548,7 +702,7 @@ export default function AuthModal({
           </form>
         )}
 
-        {/* SIGN UP FORM (STEP 1: ACCOUNT CREATION) */}
+        {/* SIGN UP FORM (FULL NAME, EMAIL, PASSWORD, CONFIRM PASSWORD, TERMS) */}
         {mode === 'signup' && (
           <form onSubmit={handleSignUp} className="space-y-3">
             <div>
@@ -603,6 +757,28 @@ export default function AuthModal({
               </div>
             </div>
 
+            <div>
+              <label className="block text-[11px] font-semibold text-[#A1A4B0] mb-1">Confirm Password</label>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-[#5E626E] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Re-enter password"
+                  required
+                  className="w-full pl-10 pr-10 py-2.5 bg-[#17181D] border border-white/[0.08] rounded-xl text-white text-xs placeholder:text-[#5E626E] focus:outline-none focus:border-white/30 transition"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
+                >
+                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
             {/* Terms checkbox */}
             <div className="flex items-start gap-2 pt-1">
               <input
@@ -642,7 +818,248 @@ export default function AuthModal({
           </form>
         )}
 
-        {/* STEP 2: PROFILE DETAILS (EXCLUDING EXPERIENCE, EDUCATION, AND BIO) */}
+        {/* SIGN UP OTP VERIFICATION STEP */}
+        {mode === 'otp' && (
+          <form onSubmit={handleVerifyOtp} className="space-y-4">
+            <div>
+              <label className="block text-[11px] font-semibold text-[#A1A4B0] mb-1.5">
+                6-Digit Verification Code
+              </label>
+              <input
+                type="text"
+                value={otpToken}
+                onChange={(e) => setOtpToken(e.target.value.trim())}
+                placeholder="123456"
+                maxLength={8}
+                required
+                className="w-full text-center tracking-widest text-xl py-3 bg-[#17181D] border border-white/[0.08] rounded-xl text-white font-mono placeholder:text-[#5E626E] focus:outline-none focus:border-white/30 transition"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 rounded-full bg-white hover:bg-white/90 text-black text-xs font-bold transition shadow-lg active:scale-[0.99] flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+              ) : (
+                <span>Confirm & Set Up Profile</span>
+              )}
+            </button>
+
+            <div className="flex items-center justify-between pt-1">
+              <button
+                type="button"
+                onClick={handleResendSignUpOtp}
+                disabled={resendCooldown > 0 || resending}
+                className="text-[11px] text-[#A1A4B0] hover:text-white transition disabled:opacity-50 flex items-center gap-1.5"
+              >
+                <RotateCcw className={`w-3 h-3 ${resending ? 'animate-spin' : ''}`} />
+                <span>
+                  {resendCooldown > 0
+                    ? `Resend code in ${resendCooldown}s`
+                    : 'Resend code'}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('signup');
+                  resetForm();
+                }}
+                className="text-[11px] text-[#A1A4B0] hover:text-white transition"
+              >
+                ← Back to Sign Up
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* FORGOT PASSWORD STEP 1: REQUEST CODE */}
+        {mode === 'forgot' && (
+          <form onSubmit={handleForgotPassword} className="space-y-4">
+            <div>
+              <label className="block text-[11px] font-semibold text-[#A1A4B0] mb-1.5">
+                Your Email Address
+              </label>
+              <div className="relative">
+                <Mail className="w-4 h-4 text-[#5E626E] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@example.com"
+                  required
+                  className="w-full pl-10 pr-4 py-2.5 bg-[#17181D] border border-white/[0.08] rounded-xl text-white text-xs placeholder:text-[#5E626E] focus:outline-none focus:border-white/30 transition"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 rounded-full bg-white hover:bg-white/90 text-black text-xs font-bold transition shadow-lg active:scale-[0.99] flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+              ) : (
+                <span>Send Recovery Code</span>
+              )}
+            </button>
+
+            <div className="flex items-center justify-between pt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('recovery_otp');
+                  resetForm();
+                }}
+                className="text-[11px] text-[#A1A4B0] hover:text-white underline transition"
+              >
+                Already have a recovery code?
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('signin');
+                  resetForm();
+                }}
+                className="text-[11px] text-[#A1A4B0] hover:text-white transition"
+              >
+                ← Back to Sign In
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* FORGOT PASSWORD STEP 2: VERIFY RECOVERY CODE */}
+        {mode === 'recovery_otp' && (
+          <form onSubmit={handleVerifyRecoveryOtp} className="space-y-4">
+            <div>
+              <label className="block text-[11px] font-semibold text-[#A1A4B0] mb-1.5">
+                6-Digit Recovery Code
+              </label>
+              <input
+                type="text"
+                value={recoveryOtp}
+                onChange={(e) => setRecoveryOtp(e.target.value.trim())}
+                placeholder="123456"
+                maxLength={8}
+                required
+                className="w-full text-center tracking-widest text-xl py-3 bg-[#17181D] border border-white/[0.08] rounded-xl text-white font-mono placeholder:text-[#5E626E] focus:outline-none focus:border-white/30 transition"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 rounded-full bg-white hover:bg-white/90 text-black text-xs font-bold transition shadow-lg active:scale-[0.99] flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+              ) : (
+                <span>Verify Code</span>
+              )}
+            </button>
+
+            <div className="flex items-center justify-between pt-1">
+              <button
+                type="button"
+                onClick={handleResendRecoveryOtp}
+                disabled={resendCooldown > 0 || resending}
+                className="text-[11px] text-[#A1A4B0] hover:text-white transition disabled:opacity-50 flex items-center gap-1.5"
+              >
+                <RotateCcw className={`w-3 h-3 ${resending ? 'animate-spin' : ''}`} />
+                <span>
+                  {resendCooldown > 0
+                    ? `Resend code in ${resendCooldown}s`
+                    : 'Resend code'}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('forgot');
+                  resetForm();
+                }}
+                className="text-[11px] text-[#A1A4B0] hover:text-white transition"
+              >
+                ← Back
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* FORGOT PASSWORD STEP 3: RESET PASSWORD */}
+        {mode === 'reset_password' && (
+          <form onSubmit={handleUpdatePassword} className="space-y-3.5">
+            <div>
+              <label className="block text-[11px] font-semibold text-[#A1A4B0] mb-1.5">
+                New Password
+              </label>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-[#5E626E] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type={showNewPassword ? 'text' : 'password'}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Min. 6 characters"
+                  required
+                  className="w-full pl-10 pr-10 py-2.5 bg-[#17181D] border border-white/[0.08] rounded-xl text-white text-xs placeholder:text-[#5E626E] focus:outline-none focus:border-white/30 transition"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
+                >
+                  {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-semibold text-[#A1A4B0] mb-1.5">
+                Confirm New Password
+              </label>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-[#5E626E] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type={showConfirmNewPassword ? 'text' : 'password'}
+                  value={confirmNewPassword}
+                  onChange={(e) => setConfirmNewPassword(e.target.value)}
+                  placeholder="Re-enter new password"
+                  required
+                  className="w-full pl-10 pr-10 py-2.5 bg-[#17181D] border border-white/[0.08] rounded-xl text-white text-xs placeholder:text-[#5E626E] focus:outline-none focus:border-white/30 transition"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmNewPassword(!showConfirmNewPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
+                >
+                  {showConfirmNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 rounded-full bg-white hover:bg-white/90 text-black text-xs font-bold transition shadow-lg active:scale-[0.99] flex items-center justify-center gap-2 mt-4"
+            >
+              {loading ? (
+                <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+              ) : (
+                <span>Update Password & Sign In</span>
+              )}
+            </button>
+          </form>
+        )}
+
+        {/* STEP 2: PROFILE DETAILS (FOR NEW SIGNUPS) */}
         {mode === 'details' && (
           <form onSubmit={handleSaveProfileDetails} className="space-y-4 animate-in fade-in">
             {/* Avatar Section */}
@@ -866,98 +1283,10 @@ export default function AuthModal({
                 <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
               ) : (
                 <>
-                  <span>Save Profile & Continue to Vouch</span>
+                  <span>Save Profile & Continue</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </>
               )}
-            </button>
-          </form>
-        )}
-
-        {/* OTP VERIFICATION STEP */}
-        {mode === 'otp' && (
-          <form onSubmit={handleVerifyOtp} className="space-y-4">
-            <div>
-              <label className="block text-[11px] font-semibold text-[#A1A4B0] mb-1.5">
-                6-Digit Verification Code
-              </label>
-              <input
-                type="text"
-                value={otpToken}
-                onChange={(e) => setOtpToken(e.target.value.trim())}
-                placeholder="123456"
-                maxLength={8}
-                required
-                className="w-full text-center tracking-widest text-lg py-3 bg-[#17181D] border border-white/[0.08] rounded-xl text-white font-mono placeholder:text-[#5E626E] focus:outline-none focus:border-white/30 transition"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3.5 rounded-full bg-white hover:bg-white/90 text-black text-xs font-bold transition shadow-lg active:scale-[0.99] flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-              ) : (
-                <span>Confirm & Set Up Profile</span>
-              )}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setMode('signup');
-                resetForm();
-              }}
-              className="w-full text-center text-[11px] text-[#A1A4B0] hover:text-white transition"
-            >
-              ← Back to Sign Up
-            </button>
-          </form>
-        )}
-
-        {/* FORGOT PASSWORD FORM */}
-        {mode === 'forgot' && (
-          <form onSubmit={handleForgotPassword} className="space-y-4">
-            <div>
-              <label className="block text-[11px] font-semibold text-[#A1A4B0] mb-1.5">
-                Your Email Address
-              </label>
-              <div className="relative">
-                <Mail className="w-4 h-4 text-[#5E626E] absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@example.com"
-                  required
-                  className="w-full pl-10 pr-4 py-2.5 bg-[#17181D] border border-white/[0.08] rounded-xl text-white text-xs placeholder:text-[#5E626E] focus:outline-none focus:border-white/30 transition"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3.5 rounded-full bg-white hover:bg-white/90 text-black text-xs font-bold transition shadow-lg active:scale-[0.99] flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-              ) : (
-                <span>Send Reset Link</span>
-              )}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setMode('signin');
-                resetForm();
-              }}
-              className="w-full text-center text-[11px] text-[#A1A4B0] hover:text-white transition"
-            >
-              ← Back to Sign In
             </button>
           </form>
         )}
