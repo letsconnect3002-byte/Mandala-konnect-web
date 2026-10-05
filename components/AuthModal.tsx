@@ -102,12 +102,39 @@ export default function AuthModal({
     return () => clearInterval(interval);
   }, [resendCooldown]);
 
-  if (!isOpen) return null;
-
   const resetForm = () => {
     setErrorMsg(null);
     setInfoMsg(null);
   };
+
+  const handleClose = () => {
+    resetForm();
+    setMode(initialMode || 'signin');
+    setPassword('');
+    setConfirmPassword('');
+    setOtpToken('');
+    setRecoveryOtp('');
+    setNewPassword('');
+    setConfirmNewPassword('');
+    setCreatedProfile(null);
+    onClose();
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      setMode(initialMode || 'signin');
+      resetForm();
+      setPassword('');
+      setConfirmPassword('');
+      setOtpToken('');
+      setRecoveryOtp('');
+      setNewPassword('');
+      setConfirmNewPassword('');
+      setCreatedProfile(null);
+    }
+  }, [isOpen, initialMode]);
+
+  if (!isOpen) return null;
 
   const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -193,7 +220,7 @@ export default function AuthModal({
       if (!profile) throw new Error('Could not initialize your user profile');
 
       onSuccess(profile);
-      onClose();
+      handleClose();
     } catch (err: any) {
       setErrorMsg(getFriendlyErrorMessage(err));
     } finally {
@@ -486,7 +513,7 @@ export default function AuthModal({
       }
 
       onSuccess(updated);
-      onClose();
+      handleClose();
     } catch (err: any) {
       console.error('Failed to save profile details:', err);
       setErrorMsg(getFriendlyErrorMessage(err));
@@ -503,7 +530,7 @@ export default function AuthModal({
       >
         {/* Close Button */}
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="absolute top-4 right-4 text-white/50 hover:text-white transition p-1.5 rounded-full hover:bg-white/5"
           aria-label="Close"
         >

@@ -276,6 +276,8 @@ export default function ProfileView({ profile }: ProfileViewProps) {
   // Auth & Vouch state
   const [currentUser, setCurrentUser] = useState<UserProfileSummary | null>(null);
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup'>('signin');
+  const [authIntent, setAuthIntent] = useState<'signin' | 'vouch'>('signin');
   const [authPrompt, setAuthPrompt] = useState('Sign in to vouch for this profile');
   const [completeProfileModalOpen, setCompleteProfileModalOpen] = useState(false);
   const [vouchModalOpen, setVouchModalOpen] = useState(false);
@@ -531,6 +533,8 @@ export default function ProfileView({ profile }: ProfileViewProps) {
 
   const handleVouchClick = () => {
     if (!currentUser) {
+      setAuthIntent('vouch');
+      setAuthModalMode('signin');
       setAuthPrompt(`Sign in or create an account to vouch for ${profileState.name}`);
       setAuthModalOpen(true);
       return;
@@ -558,7 +562,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
   const handleAuthSuccess = (newProfile: UserProfileSummary) => {
     setCurrentUser(newProfile);
     showToast(`Signed in as ${newProfile.name}`);
-    if (newProfile.id !== profileState.id && !hasVouched) {
+    if (authIntent === 'vouch' && newProfile.id !== profileState.id && !hasVouched) {
       if (isProfileDetailsIncomplete(newProfile)) {
         setTimeout(() => {
           setCompleteProfileModalOpen(true);
@@ -625,6 +629,10 @@ export default function ProfileView({ profile }: ProfileViewProps) {
     setHasVouched(false);
     setMyVouch(null);
     setUserMenuOpen(false);
+    setAuthIntent('signin');
+    setAuthModalMode('signin');
+    setAuthModalOpen(false);
+    setCompleteProfileModalOpen(false);
     showToast('Signed out successfully');
   };
 
@@ -984,6 +992,8 @@ export default function ProfileView({ profile }: ProfileViewProps) {
               <button
                 type="button"
                 onClick={() => {
+                  setAuthIntent('signin');
+                  setAuthModalMode('signin');
                   setAuthPrompt('Sign in or create an account on Jana');
                   setAuthModalOpen(true);
                 }}
@@ -1876,6 +1886,7 @@ export default function ProfileView({ profile }: ProfileViewProps) {
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
         onSuccess={handleAuthSuccess}
+        initialMode={authModalMode}
         actionPrompt={authPrompt}
         targetProfileName={profileState.name}
       />
