@@ -23,8 +23,8 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Jana | Connect Your Inner Circle",
-  description: "A private, distraction-free messaging app designed for your genuine professional and close circles. No algorithms, no strangers, no noise.",
+  title: "Jana | Curated Invite-Only Network for Startups, VC & Tech",
+  description: "Jana is a curated, invite-only social network for the startup, venture capital community and tech ecosystem. Get vouched by the people who trust you and build your social reputation in your professional world.",
   icons: {
     icon: [
       { url: "/icon.png", type: "image/png" }
